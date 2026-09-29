@@ -18,7 +18,7 @@ if RunService:IsServer() then
 		["SDAWRS8123"] = 10910089999,
 		["KLSDWT3245"] = 11135058989,
 		["Mzino"] = 10980967466,
-		["ILOVEMYDOG"] = 10251358614,
+		["SOTV"] = 7335573976,
 		["OCEANA-001-KEY"] = 0,
 		["OCEANA-002-KEY"] = 0,
 		["OCEANA-003-KEY"] = 0,
@@ -213,7 +213,7 @@ else
 			["SDAWRS8123"] = true,
 			["KLSDWT3245"] = true,
 			["Mzino"] = true,
-			["ILOVEMYDOG"] = true,
+			["SOTV"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
 			["OCEANA-002-KEY"] = true,
@@ -356,7 +356,7 @@ else
 		["SDAWRS8123"] = 10910089999,
 		["KLSDWT3245"] = 11135058989,
 		["Mzino"] = 10980967466,
-		["ILOVEMYDOG"] = 10251358614,
+		["SOTV"] = 7335573976,
 	}
 
 	--============================================================
