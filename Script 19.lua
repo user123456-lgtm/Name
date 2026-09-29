@@ -17,6 +17,7 @@ if RunService:IsServer() then
 		["AXZDADS1923"] = 8336401677,
 		["SDAWRS8123"] = 10910089999,
 		["KLSDWT3245"] = 11135058989,
+		["Mzino"] = 10980967466,
 		["OCEANA-001-KEY"] = 0,
 		["OCEANA-002-KEY"] = 0,
 		["OCEANA-003-KEY"] = 0,
@@ -167,7 +168,7 @@ else
 	-- StarterPlayer > StarterPlayerScripts
 	--
 	-- ACCESS KEY:
-	-- Carson19235
+	-- Carson19235 / Mzino
 	--
 	-- RIGHT SHIFT:
 	-- Show / Hide dashboard
@@ -210,6 +211,7 @@ else
 			["AXZDADS1923"] = true,
 			["SDAWRS8123"] = true,
 			["KLSDWT3245"] = true,
+			["Mzino"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
 			["OCEANA-002-KEY"] = true,
@@ -351,6 +353,7 @@ else
 		["AXZDADS1923"] = 8336401677,
 		["SDAWRS8123"] = 10910089999,
 		["KLSDWT3245"] = 11135058989,
+		["Mzino"] = 10980967466,
 	}
 
 	--============================================================
@@ -1257,11 +1260,10 @@ else
 		"Thank you for using OCEANA",
 		UDim2.new(1, -10, 0, 220),
 		UDim2.fromOffset(0, 0),
-		26
+		14
 	)
 
 	info.TextWrapped = true
-	info.Font = Enum.Font.GothamBold
 	info.LayoutOrder = 2
 
 	--============================================================
@@ -3810,36 +3812,19 @@ else
 		return root, humanoid
 	end
 
-	-- Spectate camera state. The camera follows the selected player,
-	-- while the local mouse controls the viewing direction.
+	--============================================================
+	-- NEW SPECTATE CAMERA
+	--============================================================
+
 	local SpectateLooking = false
-	local LastSpectateStreamRequest = 0
-	local SpectateThirdPersonDistance = 16
-	local SpectateThirdPersonHeight = 5
 	local SpectateYaw = 0
 	local SpectatePitch = 0
+	local SpectateDistance = 14
 	local SpectateLookSensitivity = 0.0035
 	local SpectateMinDistance = 4
-	local SpectateMaxDistance = 40
+	local SpectateMaxDistance = 35
 
-	function requestSpectateMap(root)
-		if not root or not root.Parent then
-			return
-		end
-
-		-- Ask Roblox streaming to load the area around the spectated player.
-		-- This is especially important when the target is far away from us.
-		if os.clock() - LastSpectateStreamRequest < 0.75 then
-			return
-		end
-		LastSpectateStreamRequest = os.clock()
-
-		pcall(function()
-			LocalPlayer:RequestStreamAroundAsync(root.Position)
-		end)
-	end
-
-	function stopSpectating()
+	local function stopSpectating()
 		SpectatingPlayer = nil
 		SpectateLooking = false
 		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
@@ -3856,74 +3841,63 @@ else
 		SpectateButton.TextColor3 = WHITE
 	end
 
-	function resetSpectateLook(root)
-		SpectateLooking = false
 
+	local function resetSpectateLook(root)
 		if not root or not root.Parent then
 			SpectateYaw = 0
 			SpectatePitch = 0
 			return
 		end
 
-		local character = root.Parent
-		local head = character:FindFirstChild("Head")
-		local source = (head and head:IsA("BasePart")) and head or root
-		local pitch, yaw, _ = source.CFrame:ToOrientation()
-
-		SpectateYaw = yaw
-		SpectatePitch = math.clamp(pitch, math.rad(-80), math.rad(80))
+		local look = root.CFrame.LookVector
+		SpectateYaw = math.atan2(-look.X, -look.Z)
+		SpectatePitch = 0
 	end
 
-	function getSpectateCameraCFrame(root)
+	local function getSpectateCameraCFrame(root)
 		if not root or not root.Parent then
 			return nil
 		end
 
 		local character = root.Parent
 		local head = character:FindFirstChild("Head")
+		local focusPosition = (head and head:IsA("BasePart"))
+			and head.Position
+			or (root.Position + Vector3.new(0, 1.5, 0))
+
 		local rotation = CFrame.fromOrientation(SpectatePitch, SpectateYaw, 0)
 
 		if SpectateViewMode == "Third Person" then
-			-- Third-person orbit: position follows the player, but the
-			-- viewing direction is controlled independently by the spectator.
-			local focusPosition = root.Position + Vector3.new(0, 1.5, 0)
-			local offset = rotation:VectorToWorldSpace(Vector3.new(0, 0, SpectateThirdPersonDistance))
-			local cameraPosition = focusPosition + offset
-			return CFrame.lookAt(cameraPosition, focusPosition)
+			local offset = rotation:VectorToWorldSpace(Vector3.new(0, 0, SpectateDistance))
+			return CFrame.lookAt(focusPosition + offset, focusPosition)
 		end
 
-		-- First-person: keep the camera at the target's head while allowing
-		-- the spectator to freely look around instead of forcing head rotation.
-		if head and head:IsA("BasePart") then
-			local cameraPosition = head.Position + Vector3.new(0, 0.05, 0)
-			return CFrame.new(cameraPosition) * rotation
-		end
-
-		local cameraPosition = root.Position + Vector3.new(0, 1.5, 0)
-		return CFrame.new(cameraPosition) * rotation
+		return CFrame.new(focusPosition) * rotation
 	end
 
-	function spectateSelectedPlayer()
+	local function spectateSelectedPlayer()
 		local player = SelectedSpectatePlayer
 
-		-- If no player was selected, automatically choose the first valid player.
 		if not player or player == LocalPlayer or not player.Parent then
 			player = nil
+
 			for _, candidate in ipairs(Players:GetPlayers()) do
 				if candidate ~= LocalPlayer and candidate.Parent then
 					player = candidate
 					break
 				end
 			end
-			if player then
-				SelectedSpectatePlayer = player
-				SelectedPlayerStatus.Text = "Selected Player: " .. player.DisplayName .. " (" .. player.Name .. ")"
-				SelectedPlayerStatus.TextColor3 = BLUE2
-			else
+
+			if not player then
 				SpectateButton.Text = "Spectate: NO PLAYERS"
 				SpectateButton.TextColor3 = BLUE2
 				return
 			end
+
+			SelectedSpectatePlayer = player
+			SelectedPlayerStatus.Text =
+				"Selected Player: " .. player.DisplayName .. " (" .. player.Name .. ")"
+			SelectedPlayerStatus.TextColor3 = BLUE2
 		end
 
 		stopInventoryView()
@@ -3931,13 +3905,17 @@ else
 
 		local camera = workspace.CurrentCamera
 		local root = getTargetRoot(player)
+
 		if camera and root then
 			resetSpectateLook(root)
 			camera.CameraType = Enum.CameraType.Scriptable
-			local spectateCFrame = getSpectateCameraCFrame(root)
-			if spectateCFrame then
-				camera.CFrame = spectateCFrame
+			camera.CameraSubject = nil
+
+			local cf = getSpectateCameraCFrame(root)
+			if cf then
+				camera.CFrame = cf
 			end
+
 			SpectateButton.Text = "Spectate: ON"
 			SpectateButton.TextColor3 = GREEN
 		else
@@ -3946,47 +3924,50 @@ else
 		end
 	end
 
-	-- One camera controller owns spectating. This prevents Roblox's default
-	-- camera and the target's respawn from fighting OCEANA for CameraSubject.
 	pcall(function()
 		RunService:UnbindFromRenderStep("OCEANA_SpectateCamera")
 	end)
 
-	RunService:BindToRenderStep("OCEANA_SpectateCamera", Enum.RenderPriority.Camera.Value + 1, function()
-		if not SpectatingPlayer then
-			return
-		end
-
-		if not SpectatingPlayer.Parent then
-			stopSpectating()
-			return
-		end
-
-		local camera = workspace.CurrentCamera
-		local root, humanoid = getTargetRoot(SpectatingPlayer)
-
-		if camera and root and humanoid then
-			requestSpectateMap(root)
-			camera.CameraType = Enum.CameraType.Scriptable
-			camera.CameraSubject = nil
-			local spectateCFrame = getSpectateCameraCFrame(root)
-			if spectateCFrame then
-				camera.CFrame = spectateCFrame
+	RunService:BindToRenderStep(
+		"OCEANA_SpectateCamera",
+		Enum.RenderPriority.Camera.Value + 1,
+		function()
+			if not SpectatingPlayer then
+				return
 			end
-			SpectateButton.Text = "Spectate: ON"
-			SpectateButton.TextColor3 = GREEN
-		else
-			if camera then
+
+			if not SpectatingPlayer.Parent then
+				stopSpectating()
+				return
+			end
+
+			local camera = workspace.CurrentCamera
+			local root, humanoid = getTargetRoot(SpectatingPlayer)
+
+			if not camera then
+				return
+			end
+
+			if root and humanoid then
 				camera.CameraType = Enum.CameraType.Scriptable
 				camera.CameraSubject = nil
-			end
-			SpectateButton.Text = "Spectate: WAITING"
-			SpectateButton.TextColor3 = BLUE2
-		end
-	end)
 
-	-- Mouse-look for spectating. Hold RIGHT MOUSE and move the mouse to
-	-- freely look around while the camera follows the selected player.
+				local cf = getSpectateCameraCFrame(root)
+				if cf then
+					camera.CFrame = cf
+				end
+
+				SpectateButton.Text = "Spectate: ON"
+				SpectateButton.TextColor3 = GREEN
+			else
+				camera.CameraType = Enum.CameraType.Scriptable
+				camera.CameraSubject = nil
+				SpectateButton.Text = "Spectate: WAITING"
+				SpectateButton.TextColor3 = BLUE2
+			end
+		end
+	)
+
 	UserInputService.InputBegan:Connect(function(input, processed)
 		if processed or not SpectatingPlayer then
 			return
@@ -4007,13 +3988,13 @@ else
 			SpectateYaw -= input.Delta.X * SpectateLookSensitivity
 			SpectatePitch = math.clamp(
 				SpectatePitch - input.Delta.Y * SpectateLookSensitivity,
-				math.rad(-89),
-				math.rad(89)
+				math.rad(-85),
+				math.rad(85)
 			)
 		elseif input.UserInputType == Enum.UserInputType.MouseWheel
 			and SpectateViewMode == "Third Person" then
-			SpectateThirdPersonDistance = math.clamp(
-				SpectateThirdPersonDistance - input.Position.Z * 2,
+			SpectateDistance = math.clamp(
+				SpectateDistance - input.Position.Z * 2,
 				SpectateMinDistance,
 				SpectateMaxDistance
 			)
@@ -4036,7 +4017,12 @@ else
 			SpectateViewButton.Text = "View: FIRST PERSON"
 		end
 
-		-- The render-step camera controller applies the new view immediately.
+		if SpectatingPlayer then
+			local root = getTargetRoot(SpectatingPlayer)
+			if root then
+				resetSpectateLook(root)
+			end
+		end
 	end)
 
 	SpectateButton.MouseButton1Click:Connect(function()
@@ -4065,11 +4051,10 @@ else
 		end
 
 		SelectedSpectatePlayer = player
-		SelectedPlayerStatus.Text = "Selected Player: " .. player.DisplayName .. " (" .. player.Name .. ")"
+		SelectedPlayerStatus.Text =
+			"Selected Player: " .. player.DisplayName .. " (" .. player.Name .. ")"
 		SelectedPlayerStatus.TextColor3 = BLUE2
 
-		-- Changing selection closes inventory so it can never remain attached
-		-- to the previous player.
 		stopInventoryView()
 
 		for _, child in ipairs(PlayerListScroll:GetChildren()) do
@@ -4083,28 +4068,6 @@ else
 				end
 			end
 		end
-
-		-- If spectating is already active, switch the camera immediately to
-		-- the newly selected player. Otherwise, selecting a player starts
-		-- spectating directly from the Players tab.
-		SpectatingPlayer = player
-		local camera = workspace.CurrentCamera
-		local root = getTargetRoot(player)
-
-		if camera and root then
-			resetSpectateLook(root)
-			camera.CameraType = Enum.CameraType.Scriptable
-			camera.CameraSubject = nil
-			local spectateCFrame = getSpectateCameraCFrame(root)
-			if spectateCFrame then
-				camera.CFrame = spectateCFrame
-			end
-			SpectateButton.Text = "Spectate: ON"
-			SpectateButton.TextColor3 = GREEN
-		else
-			SpectateButton.Text = "Spectate: WAITING"
-			SpectateButton.TextColor3 = BLUE2
-		end
 	end
 
 	function refreshPlayersPage()
@@ -4115,6 +4078,7 @@ else
 		end
 
 		local players = {}
+
 		for _, player in ipairs(Players:GetPlayers()) do
 			if player ~= LocalPlayer then
 				table.insert(players, player)
@@ -4132,6 +4096,7 @@ else
 				UDim2.fromOffset(0, 0),
 				UDim2.new(1, -5, 0, 38)
 			)
+
 			nameButton.LayoutOrder = index
 			nameButton:SetAttribute("SelectedPlayer", player.UserId)
 
@@ -4140,8 +4105,6 @@ else
 			end
 
 			nameButton.MouseButton1Click:Connect(function()
-				-- Clicking a player in the Players tab now selects AND spectates
-				-- that player immediately. Clicking another player switches target.
 				selectSpectatePlayer(player)
 			end)
 		end
@@ -4152,11 +4115,14 @@ else
 	Players.PlayerAdded:Connect(function(player)
 		task.wait(0.2)
 		refreshPlayersPage()
-		player.CharacterAdded:Connect(function(character)
+
+		player.CharacterAdded:Connect(function()
 			task.wait(0.5)
+
 			if hasPlayerESPEnabled() then
 				addESP(player)
 			end
+
 			if SpectatingPlayer == player then
 				SpectateButton.Text = "Spectate: ON"
 				SpectateButton.TextColor3 = GREEN
@@ -4187,8 +4153,9 @@ else
 
 	for _, player in ipairs(Players:GetPlayers()) do
 		if player ~= LocalPlayer then
-			player.CharacterAdded:Connect(function(character)
+			player.CharacterAdded:Connect(function()
 				task.wait(0.5)
+
 				if hasPlayerESPEnabled() then
 					addESP(player)
 				end
