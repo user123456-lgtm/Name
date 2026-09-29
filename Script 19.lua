@@ -1257,10 +1257,11 @@ else
 		"Thank you for using OCEANA",
 		UDim2.new(1, -10, 0, 220),
 		UDim2.fromOffset(0, 0),
-		14
+		26
 	)
 
 	info.TextWrapped = true
+	info.Font = Enum.Font.GothamBold
 	info.LayoutOrder = 2
 
 	--============================================================
