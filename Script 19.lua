@@ -20,7 +20,7 @@ if RunService:IsServer() then
 		["Mzino"] = 10980967466,
 		["SOTV"] = 7335573976,
 		["ILOVEMYDOG"] = 10251358614,
-	["kcfrmdacv"] = 2028754348,
+	["KCFRMDACV"] = 2028754348,
 		["OCEANA-001-KEY"] = 0,
 		["OCEANA-002-KEY"] = 0,
 		["OCEANA-003-KEY"] = 0,
@@ -217,7 +217,7 @@ else
 			["Mzino"] = true,
 			["SOTV"] = true,
 			["ILOVEMYDOG"] = true,
-			["kcfrmdacv"] = true,
+			["KCFRMDACV"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
 			["OCEANA-002-KEY"] = true,
@@ -362,7 +362,7 @@ else
 		["Mzino"] = 10980967466,
 		["SOTV"] = 7335573976,
 		["ILOVEMYDOG"] = 10251358614,
-	["kcfrmdacv"] = 2028754348,
+	["KCFRMDACV"] = 2028754348,
 	}
 
 	--============================================================
