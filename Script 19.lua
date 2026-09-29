@@ -2453,6 +2453,29 @@ else
 	-- MOVE EXACT BIKE
 	--============================================================
 
+	local function setBikeNoclip(bike, enabled, states)
+		if not bike or not bike.Parent then
+			return
+		end
+
+		for _, object in ipairs(bike:GetDescendants()) do
+			if object:IsA("BasePart") then
+				if enabled then
+					if states[object] == nil then
+						states[object] = object.CanCollide
+					end
+					object.CanCollide = false
+				else
+					local original = states[object]
+					if original ~= nil and object.Parent then
+						object.CanCollide = original
+					end
+					states[object] = nil
+				end
+			end
+		end
+	end
+
 	local function moveBikeToDeliveryZone(bike, destination)
 		if not bike
 			or bike ~= CurrentBike
@@ -2485,6 +2508,8 @@ else
 			)
 
 		local startTime = os.clock()
+		local bikeNoclipStates = {}
+		setBikeNoclip(bike, true, bikeNoclipStates)
 
 		while
 			AutoFarmRunning
@@ -2503,6 +2528,8 @@ else
 
 			local smoothAlpha =
 				alpha * alpha * (3 - 2 * alpha)
+
+			setBikeNoclip(bike, true, bikeNoclipStates)
 
 			bike:PivotTo(
 				startCFrame:Lerp(
@@ -2523,6 +2550,7 @@ else
 		end
 
 		if CurrentBike ~= bike then
+			setBikeNoclip(bike, false, bikeNoclipStates)
 			return false
 		end
 
@@ -2554,12 +2582,16 @@ else
 					StatusText.TextColor3 = GREEN
 				end
 
+				setBikeNoclip(bike, false, bikeNoclipStates)
 				return true
 			end
 
 			if not bike.Parent then
+				setBikeNoclip(bike, false, bikeNoclipStates)
 				return true
 			end
+
+			setBikeNoclip(bike, true, bikeNoclipStates)
 
 			if os.clock() - waitStart >=
 				Config.DELIVERY_TIMEOUT then
@@ -2571,6 +2603,7 @@ else
 					StatusText.TextColor3 = RED
 				end
 
+				setBikeNoclip(bike, false, bikeNoclipStates)
 				return false
 			end
 
@@ -2579,6 +2612,7 @@ else
 			task.wait(0.1)
 		end
 
+		setBikeNoclip(bike, false, bikeNoclipStates)
 		return false
 	end
 
@@ -3008,9 +3042,10 @@ else
 
 		-- Flight obstacle handling. When an obstacle is directly ahead, the
 		-- test flight rises over it instead of trying to push straight through.
-		local FLY_OBSTACLE_LOOKAHEAD = 14
-		local FLY_OBSTACLE_RISE = 8
-		local FLY_UP_SPEED = 26
+		local FLY_OBSTACLE_LOOKAHEAD = 32
+		local FLY_OBSTACLE_RISE = 10
+		local FLY_UP_SPEED = 38
+		local FLY_CLEARANCE = 5
 
 		local running = false
 		local target = nil
@@ -3245,70 +3280,115 @@ else
 
 			local speed = 35 * getSpeedMultiplier()
 			local direction = offset.Unit
-
-			-- Look for a solid obstacle in the current travel direction.
-			-- If one is found, add an upward component so the flight path
-			-- climbs above it rather than trying to pass through it.
 			local flatDirection = Vector3.new(direction.X, 0, direction.Z)
-			local obstacleDetected = false
-			local hit = nil
 
-			if flatDirection.Magnitude > 0.05 then
-				flatDirection = flatDirection.Unit
+			if flatDirection.Magnitude <= 0.05 then
+				flyVelocity.Velocity = direction * speed
+				return
+			end
 
-				local rayParams = RaycastParams.new()
-				rayParams.FilterType = Enum.RaycastFilterType.Exclude
-				rayParams.FilterDescendantsInstances = {getCharacter()}
-				rayParams.IgnoreWater = true
+			flatDirection = flatDirection.Unit
+			local right = Vector3.new(-flatDirection.Z, 0, flatDirection.X)
 
-				hit = workspace:Raycast(
-					root.Position,
-					flatDirection * math.min(FLY_OBSTACLE_LOOKAHEAD, distance),
-					rayParams
-				)
+			local rayParams = RaycastParams.new()
+			rayParams.FilterType = Enum.RaycastFilterType.Exclude
+			rayParams.FilterDescendantsInstances = {getCharacter(), npc}
+			rayParams.IgnoreWater = true
 
+			local lookAhead = math.min(FLY_OBSTACLE_LOOKAHEAD, distance)
+			local obstacleHit = nil
+
+			-- Scan the whole front of the character at several heights. This catches
+			-- tall buildings/walls instead of relying on one ray at waist height.
+			local scanHeights = {0, 3, 7, 12}
+			for _, height in ipairs(scanHeights) do
+				local origin = root.Position + Vector3.new(0, height, 0)
+				local hit = workspace:Raycast(origin, flatDirection * lookAhead, rayParams)
 				if hit and hit.Instance and hit.Instance.CanCollide then
-					obstacleDetected = true
+					obstacleHit = hit
+					break
 				end
 			end
 
-			local velocityDirection = direction
-
-			if obstacleDetected then
-				local targetHeight = root.Position.Y + FLY_OBSTACLE_RISE
-
-				if hit and hit.Instance and hit.Instance:IsA("BasePart") then
-					-- Use the top of the actual solid part, not the ray-hit point.
-					-- This prevents the Nitty from stopping halfway up a wall.
-					local part = hit.Instance
-					local halfHeight = part.Size.Y * 0.5
-					targetHeight = math.max(
-						targetHeight,
-						part.Position.Y + halfHeight + 3
-					)
+			if not obstacleHit then
+				-- Also check the front corners so wide buildings are detected before
+				-- the character reaches their edge.
+				for _, side in ipairs({-1, 1}) do
+					local origin = root.Position + right * (side * 3) + Vector3.new(0, 3, 0)
+					local hit = workspace:Raycast(origin, flatDirection * lookAhead, rayParams)
+					if hit and hit.Instance and hit.Instance.CanCollide then
+						obstacleHit = hit
+						break
+					end
 				end
+			end
 
-				-- Make sure the obstacle is actually cleared before moving
-				-- forward again.
-				if root.Position.Y < targetHeight then
-					local horizontal = Vector3.new(direction.X, 0, direction.Z)
-					if horizontal.Magnitude > 0.05 then
-						horizontal = horizontal.Unit * math.min(speed, 35)
-					else
-						horizontal = Vector3.zero
+			if not obstacleHit then
+				flyVelocity.Velocity = direction * speed
+				return
+			end
+
+			-- Try both sides using forward-diagonal rays. A side is only selected
+			-- when the space immediately beside AND ahead of the character is clear.
+			local sideClear = {}
+			for _, side in ipairs({-1, 1}) do
+				local sideDir = right * side
+				local clear = true
+				local sideDistance = 18
+
+				for _, height in ipairs({0, 3, 7}) do
+					local origin = root.Position + Vector3.new(0, height, 0)
+					local sideHit = workspace:Raycast(origin, sideDir * sideDistance, rayParams)
+					if sideHit and sideHit.Instance and sideHit.Instance.CanCollide then
+						clear = false
+						break
 					end
 
-					flyVelocity.Velocity =
-						horizontal
-						+ Vector3.yAxis * math.min(speed, FLY_UP_SPEED)
-					return
+					local diagonal = (flatDirection + sideDir * 0.85).Unit
+					local diagonalHit = workspace:Raycast(origin, diagonal * 24, rayParams)
+					if diagonalHit and diagonalHit.Instance and diagonalHit.Instance.CanCollide then
+						clear = false
+						break
+					end
 				end
 
-				-- Once above the solid object, continue toward the target.
-				velocityDirection = direction
+				sideClear[side] = clear
 			end
 
-			flyVelocity.Velocity = velocityDirection * speed
+			local velocityDirection
+			if sideClear[1] or sideClear[-1] then
+				local chosenSide
+				if sideClear[1] and sideClear[-1] then
+					-- Prefer the side that points more toward the target.
+					chosenSide = (right:Dot(flatDirection) >= 0) and 1 or -1
+				else
+					chosenSide = sideClear[1] and 1 or -1
+				end
+
+				velocityDirection = (flatDirection * 0.35 + right * chosenSide * 1.15).Unit
+				velocityDirection = Vector3.new(velocityDirection.X, 0, velocityDirection.Z).Unit
+				flyVelocity.Velocity = velocityDirection * speed
+				return
+			end
+
+			-- Both sides are blocked, so climb above the actual obstacle. Keep
+			-- checking every heartbeat; once the top is clear normal flight resumes.
+			local targetHeight = root.Position.Y + FLY_OBSTACLE_RISE
+			local part = obstacleHit.Instance
+			if part and part:IsA("BasePart") then
+				targetHeight = math.max(
+					targetHeight,
+					part.Position.Y + part.Size.Y * 0.5 + FLY_CLEARANCE
+				)
+			end
+
+			if root.Position.Y < targetHeight then
+				local climb = math.min(FLY_UP_SPEED, math.max(FLY_UP_SPEED * 0.65, (targetHeight - root.Position.Y) * 3))
+				flyVelocity.Velocity = flatDirection * (speed * 0.45) + Vector3.yAxis * climb
+			else
+				-- We are above it; move forward and slightly away from the wall.
+				flyVelocity.Velocity = flatDirection * speed + Vector3.yAxis * math.min(8, math.max(0, npcRoot.Position.Y - root.Position.Y))
+			end
 		end
 
 		local function moveToTarget(npc)
@@ -3437,6 +3517,10 @@ else
 			noclipEnabled = false
 			stopNoclip()
 			stopFlight()
+			NittyFlyButton.Text = "FLY: OFF"
+			NittyFlyButton.TextColor3 = WHITE
+			NittyNoclipButton.Text = "NOCLIP: OFF"
+			NittyNoclipButton.TextColor3 = WHITE
 			stopMovement()
 			NittyTarget.Text = "Target: none"
 			NittyStatus.Text = "Status: Nitty test stopped."
@@ -3462,10 +3546,12 @@ else
 		end)
 		NittyScanButton.LayoutOrder = 6
 
+		local refreshNittyControls
+
 		local NittySpeedButton = pageButton(NittyAutoFarmPage, "SPEED: 1X", function()
 			speedIndex += 1
 			if speedIndex > #SPEED_LEVELS then speedIndex = 1 end
-			NittySpeedButton.Text = "SPEED: " .. tostring(getSpeedMultiplier()) .. "X"
+			refreshNittyControls()
 			updateAutoFarmStateText(Config.AUTO_FARM, Flying, Noclip, getSpeedMultiplier(), flightEnabled, noclipEnabled)
 			applyMovementSpeed()
 			NittyStatus.Text = "Status: Movement speed set to " .. tostring(getSpeedMultiplier()) .. "X"
@@ -3474,19 +3560,18 @@ else
 
 		local NittyFlyButton = pageButton(NittyAutoFarmPage, "FLY: OFF", function()
 			flightEnabled = not flightEnabled
-			NittyFlyButton.Text = "FLY: " .. (flightEnabled and "ON" or "OFF")
 			if flightEnabled then
 				if startFlight() then
 					NittyStatus.Text = "Status: Flight movement enabled"
 				else
 					flightEnabled = false
-					NittyFlyButton.Text = "FLY: OFF"
 					NittyStatus.Text = "Status: Character is not ready for flight"
 				end
 			else
 				stopFlight()
 				NittyStatus.Text = "Status: Flight movement disabled"
 			end
+			refreshNittyControls()
 			updateAutoFarmStateText(Config.AUTO_FARM, Flying, Noclip, getSpeedMultiplier(), flightEnabled, noclipEnabled)
 		end)
 		NittyFlyButton.LayoutOrder = 8
@@ -3494,16 +3579,25 @@ else
 		local NittyNoclipButton = pageButton(NittyAutoFarmPage, "NOCLIP: OFF", function()
 			if noclipEnabled then
 				stopNoclip()
-				NittyNoclipButton.Text = "NOCLIP: OFF"
 				NittyStatus.Text = "Status: Noclip disabled"
 			else
 				startNoclip()
-				NittyNoclipButton.Text = "NOCLIP: ON"
 				NittyStatus.Text = "Status: Noclip enabled"
 			end
+			refreshNittyControls()
 			updateAutoFarmStateText(Config.AUTO_FARM, Flying, Noclip, getSpeedMultiplier(), flightEnabled, noclipEnabled)
 		end)
 		NittyNoclipButton.LayoutOrder = 9
+
+		refreshNittyControls = function()
+			NittySpeedButton.Text = "SPEED: " .. tostring(getSpeedMultiplier()) .. "X"
+			NittyFlyButton.Text = "FLY: " .. (flightEnabled and "ON" or "OFF")
+			NittyFlyButton.TextColor3 = flightEnabled and GREEN or WHITE
+			NittyNoclipButton.Text = "NOCLIP: " .. (noclipEnabled and "ON" or "OFF")
+			NittyNoclipButton.TextColor3 = noclipEnabled and GREEN or WHITE
+		end
+
+		refreshNittyControls()
 
 		RunService.Heartbeat:Connect(function()
 			if noclipEnabled then
