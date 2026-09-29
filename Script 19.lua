@@ -1254,13 +1254,7 @@ else
 
 	local info = label(
 		InfoPage,
-		"Thank you for using OCEANA\n\n" ..
-		"Access Key: Carson19235\n\n" ..
-		"Right Shift = Show / Hide\n\n" ..
-		"Walk Speed can be turned ON or OFF.\n" ..
-		"Delivery system uses one locked bike at a time.\n\n" ..
-		"Your game's server should validate delivery completion " ..
-		"and set the Delivered attribute on the correct bike.",
+		"Thank you for using OCEANA",
 		UDim2.new(1, -10, 0, 220),
 		UDim2.fromOffset(0, 0),
 		14
