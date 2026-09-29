@@ -19,6 +19,8 @@ if RunService:IsServer() then
 		["KLSDWT3245"] = 11135058989,
 		["Mzino"] = 10980967466,
 		["SOTV"] = 7335573976,
+		["ILOVEMYDOG"] = 10251358614,
+	["kcfrmdacv"] = 2028754348,
 		["OCEANA-001-KEY"] = 0,
 		["OCEANA-002-KEY"] = 0,
 		["OCEANA-003-KEY"] = 0,
@@ -357,6 +359,8 @@ else
 		["KLSDWT3245"] = 11135058989,
 		["Mzino"] = 10980967466,
 		["SOTV"] = 7335573976,
+		["ILOVEMYDOG"] = 10251358614,
+	["kcfrmdacv"] = 2028754348,
 	}
 
 	--============================================================
@@ -2076,6 +2080,629 @@ else
 			refreshESP()
 		end
 	)
+
+--============================================================
+-- BRIEFCASE VISUALS INTEGRATION (NON-FATAL)
+--============================================================
+
+local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
+	--// Detects briefcase/suitcase models and displays their contents
+	
+	
+	
+	local ESPEnabled = false
+	local ContentsEnabled = false
+	
+	local CurrentCases = {}
+	local CaseConnections = {}
+	
+	--==================================================
+	-- SETTINGS
+	--==================================================
+	
+	local NAME_MATCHES = {
+	    "briefcase",
+	    "suitcase",
+	    "brief case",
+	    "brief_case",
+	}
+	
+	--==================================================
+	-- CHECK NAME
+	--==================================================
+	
+	local function IsBriefcaseName(name)
+	    local lower = string.lower(name)
+	
+	    for _, wanted in ipairs(NAME_MATCHES) do
+	        if lower == wanted then
+	            return true
+	        end
+	    end
+	
+	    return false
+	end
+	
+	--==================================================
+	-- GET ROOT MODEL
+	--==================================================
+	
+	local function GetRootModel(obj)
+	    if obj:IsA("Model") then
+	        return obj
+	    end
+	
+	    local model = obj:FindFirstAncestorOfClass("Model")
+	
+	    if model then
+	        return model
+	    end
+	
+	    return nil
+	end
+	
+	--==================================================
+	-- BRIEFCASE CACHE (LOW-LAG)
+	--==================================================
+	
+	local KnownCases = {}
+	local CachedContents = {}
+	
+	local function AddKnownCase(case)
+	    if case and case.Parent then
+	        KnownCases[case] = true
+	    end
+	end
+	
+	local function RemoveKnownCase(case)
+	    KnownCases[case] = nil
+	end
+	
+	local function GetKnownCases()
+	    local result = {}
+	
+	    for case in pairs(KnownCases) do
+	        if case and case.Parent then
+	            table.insert(result, case)
+	        else
+	            KnownCases[case] = nil
+	        end
+	    end
+	
+	    return result
+	end
+	
+	--==================================================
+	-- GET TOOL NAMES ONLY
+	--==================================================
+	
+	local function GetActualToolName(tool)
+	    -- Use the game's real display/item name when it provides one.
+	    local attributes = {
+	        "DisplayName",
+	        "ItemName",
+	        "ToolName",
+	        "Display_Name",
+	    }
+	
+	    for _, attributeName in ipairs(attributes) do
+	        local value = tool:GetAttribute(attributeName)
+	        if typeof(value) == "string" and value ~= "" then
+	            return value
+	        end
+	    end
+	
+	    for _, child in ipairs(tool:GetChildren()) do
+	        if child:IsA("StringValue") then
+	            local n = string.lower(child.Name)
+	            if n == "displayname" or n == "itemname" or n == "toolname" or n == "display_name" then
+	                if child.Value ~= "" then
+	                    return child.Value
+	                end
+	            end
+	        end
+	    end
+	
+	    return tool.Name
+	end
+	
+	local function GetPickupObjectName(prompt)
+	    -- Handles pickup items that are represented by a Model/BasePart + ProximityPrompt.
+	    -- Many items display their real name in a BillboardGui/TextLabel rather than
+	    -- using the Roblox Instance name, so check those labels too.
+	    local model = prompt:FindFirstAncestorOfClass("Model")
+	    if not model then
+	        model = prompt.Parent
+	    end
+	    if not model then
+	        return nil
+	    end
+	
+	    local attributes = {
+	        "DisplayName",
+	        "ItemName",
+	        "ToolName",
+	        "Display_Name",
+	    }
+	
+	    for _, attributeName in ipairs(attributes) do
+	        local value = model:GetAttribute(attributeName)
+	        if typeof(value) == "string" and value ~= "" then
+	            return value
+	        end
+	    end
+	
+	    -- Check StringValues commonly used by item systems.
+	    for _, child in ipairs(model:GetDescendants()) do
+	        if child:IsA("StringValue") then
+	            local n = string.lower(child.Name)
+	            if n == "displayname" or n == "itemname" or n == "toolname" or n == "display_name" then
+	                if child.Value ~= "" then
+	                    return child.Value
+	                end
+	            end
+	        end
+	    end
+	
+	    -- Check the visible world-space name, such as the "Sawtooth" text in the
+	    -- screenshot. Ignore interaction text like E/Pickup.
+	    local ignored = {
+	        ["pickup"] = true,
+	        ["pick up"] = true,
+	        ["e"] = true,
+	        ["f"] = true,
+	        ["interact"] = true,
+	        ["hold"] = true,
+	    }
+	
+	    for _, child in ipairs(model:GetDescendants()) do
+	        if child:IsA("TextLabel") or child:IsA("TextButton") then
+	            local text = child.Text
+	            if typeof(text) == "string" then
+	                text = text:gsub("%s+", " "):match("^%s*(.-)%s*$")
+	                if text ~= "" and not ignored[string.lower(text)] then
+	                    -- Skip obvious UI-only/keyboard strings.
+	                    if #text <= 80 and not text:match("^[%[%]%(%)%{%}<>]+$") then
+	                        return text
+	                    end
+	                end
+	            end
+	        end
+	    end
+	
+	    -- Last fallback is the actual Model name.
+	    return model.Name
+	end
+	
+	local function GetContents(case, forceRefresh)
+	    if not forceRefresh and CachedContents[case] then
+	        return CachedContents[case]
+	    end
+	
+	    local names = {}
+	    local seen = {}
+	
+	    for _, obj in ipairs(case:GetDescendants()) do
+	        local name = nil
+	
+	        if obj:IsA("Tool") then
+	            name = GetActualToolName(obj)
+	        elseif obj:IsA("ProximityPrompt") then
+	            local action = string.lower(obj.ActionText or "")
+	            if action == "pickup" or action == "pick up" then
+	                name = GetPickupObjectName(obj)
+	            end
+	        end
+	
+	        if name
+	        and name ~= ""
+	        and name ~= case.Name
+	        and not seen[name] then
+	            seen[name] = true
+	            table.insert(names, name)
+	        end
+	    end
+	
+	    table.sort(names)
+	    CachedContents[case] = names
+	    return names
+	end
+	
+	--==================================================
+	-- REMOVE ONE ESP
+	--==================================================
+	
+	local function RemoveCaseESP(case)
+	    if not case then
+	        return
+	    end
+	
+	    local highlight = case:FindFirstChild("BlackBriefcaseESP")
+	
+	    if highlight then
+	        highlight:Destroy()
+	    end
+	
+	    local billboard = case:FindFirstChild("BlackBriefcaseInfo")
+	
+	    if billboard then
+	        billboard:Destroy()
+	    end
+	
+	    CachedContents[case] = nil
+	
+	    if CaseConnections[case] then
+	        for _, connection in ipairs(CaseConnections[case]) do
+	            pcall(function()
+	                connection:Disconnect()
+	            end)
+	        end
+	
+	        CaseConnections[case] = nil
+	    end
+	end
+	
+	--==================================================
+	-- ADD ESP
+	--==================================================
+	
+	local function AddCaseESP(case)
+	    if not case or not case.Parent or not ESPEnabled then
+	        return
+	    end
+	
+	    if case:FindFirstChild("BlackBriefcaseESP") or case:FindFirstChild("BlackBriefcaseInfo") then
+	        return
+	    end
+	
+	    local highlight = Instance.new("Highlight")
+	    highlight.Name = "BlackBriefcaseESP"
+	    highlight.Adornee = case
+	    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	    highlight.FillTransparency = 0.55
+	    highlight.OutlineTransparency = 0
+	    highlight.FillColor = Color3.fromRGB(255, 210, 0)
+	    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+	    highlight.Parent = case
+	
+	    local billboard = Instance.new("BillboardGui")
+	    billboard.Name = "BlackBriefcaseInfo"
+	    billboard.Adornee = case
+	    billboard.AlwaysOnTop = true
+	    billboard.Size = UDim2.new(0, 320, 0, 180)
+	    billboard.StudsOffset = Vector3.new(0, 3, 0)
+	    billboard.Parent = case
+	
+	    -- ONLY the detected item names are shown. No "BRIEFCASE", no "Contents:",
+	    -- no bullets, and no white text.
+	    local contentsLabel = Instance.new("TextLabel")
+	    contentsLabel.Name = "ItemNames"
+	    contentsLabel.BackgroundTransparency = 1
+	    contentsLabel.Size = UDim2.fromScale(1, 1)
+	    contentsLabel.Font = Enum.Font.GothamBold
+	    contentsLabel.TextSize = 20
+	    contentsLabel.TextColor3 = Color3.fromRGB(255, 220, 0)
+	    contentsLabel.TextStrokeTransparency = 0
+	    contentsLabel.TextWrapped = true
+	    contentsLabel.TextYAlignment = Enum.TextYAlignment.Top
+	    contentsLabel.Parent = billboard
+	
+	    local function UpdateContents()
+	        if not case.Parent then
+	            return
+	        end
+	
+	        if not ContentsEnabled then
+	            contentsLabel.Text = ""
+	            return
+	        end
+	
+	        local contents = GetContents(case)
+	
+	        -- Only yellow item names. Nothing else is displayed.
+	        contentsLabel.Text = table.concat(contents, "\n")
+	    end
+	
+	    UpdateContents()
+	
+	    CaseConnections[case] = {}
+	    local contentsUpdateQueued = false
+	
+	    local function QueueContentsUpdate()
+	        if contentsUpdateQueued then
+	            return
+	        end
+	
+	        contentsUpdateQueued = true
+	
+	        task.delay(0.1, function()
+	            contentsUpdateQueued = false
+	            CachedContents[case] = nil
+	            if case.Parent then
+	                UpdateContents()
+	            end
+	        end)
+	    end
+	
+	    table.insert(CaseConnections[case], case.DescendantAdded:Connect(function(obj)
+	        if obj:IsA("Tool") or obj:IsA("ProximityPrompt") or obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("StringValue") then
+	            QueueContentsUpdate()
+	        end
+	    end))
+	
+	    table.insert(CaseConnections[case], case.DescendantRemoving:Connect(function(obj)
+	        if obj:IsA("Tool") or obj:IsA("ProximityPrompt") or obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("StringValue") then
+	            QueueContentsUpdate()
+	        end
+	    end))
+	end
+	
+	--==================================================
+	-- REMOVE ALL ESP
+	--==================================================
+	
+	local function RemoveAllESP()
+	    for _, case in ipairs(CurrentCases) do
+	        RemoveCaseESP(case)
+	    end
+	
+	    CurrentCases = {}
+	end
+	
+	--==================================================
+	-- UPDATE ESP (CACHED / LOW-LAG)
+	--==================================================
+	
+	local function UpdateESP()
+	    if not ESPEnabled then
+	        RemoveAllESP()
+	        return
+	    end
+	
+	    -- Do not destroy/recreate every ESP on every refresh. Only add missing ones.
+	    local active = {}
+	
+	    for _, case in ipairs(CurrentCases) do
+	        if case and case.Parent and KnownCases[case] then
+	            active[case] = true
+	        else
+	            RemoveCaseESP(case)
+	        end
+	    end
+	
+	    local newCurrentCases = {}
+	
+	    for case in pairs(KnownCases) do
+	        if case and case.Parent then
+	            table.insert(newCurrentCases, case)
+	
+	            if not active[case] then
+	                AddCaseESP(case)
+	            end
+	        else
+	            KnownCases[case] = nil
+	        end
+	    end
+	
+	    CurrentCases = newCurrentCases
+	end
+	
+	-- EVENT-DRIVEN DETECTION (NO REPEATED WORKSPACE SCANS)
+	--==================================================
+	
+	local refreshQueued = false
+	
+	local function QueueESPRefresh()
+	    if refreshQueued then
+	        return
+	    end
+	
+	    refreshQueued = true
+	
+	    task.delay(0.1, function()
+	        refreshQueued = false
+	        if ESPEnabled then
+	            UpdateESP()
+	        end
+	    end)
+	end
+	
+	workspace.DescendantAdded:Connect(function(obj)
+	    if IsBriefcaseName(obj.Name) then
+	        local model = GetRootModel(obj)
+	
+	        if model then
+	            AddKnownCase(model)
+	        elseif obj:IsA("BasePart") then
+	            AddKnownCase(obj)
+	        end
+	
+	        QueueESPRefresh()
+	    end
+	end)
+	
+	workspace.DescendantRemoving:Connect(function(obj)
+	    if IsBriefcaseName(obj.Name) then
+	        local model = GetRootModel(obj)
+	
+	        if model and not model.Parent then
+	            RemoveKnownCase(model)
+	        elseif obj:IsA("BasePart") and not obj.Parent then
+	            RemoveKnownCase(obj)
+	        end
+	
+	        QueueESPRefresh()
+	    end
+	end)
+	
+	--==================================================
+	-- START
+	--==================================================
+	
+	task.defer(UpdateESP)
+	--==================================================
+	-- MASTER BRIEFCASE ITEM NAME COLLECTOR
+	--==================================================
+	-- Records every real Tool name found inside detected briefcases.
+	
+	local FoundBriefcaseItems = {}
+	local SeenBriefcaseItems = {}
+	
+	local function RecordBriefcaseItemName(name)
+	    if not name or name == "" then
+	        return
+	    end
+	
+	    if SeenBriefcaseItems[name] then
+	        return
+	    end
+	
+	    SeenBriefcaseItems[name] = true
+	    table.insert(FoundBriefcaseItems, name)
+	    table.sort(FoundBriefcaseItems)
+	
+	    print("[BRIEFCASE ITEM FOUND] " .. name)
+	end
+	
+	local function RecordBriefcaseTool(tool)
+	    if not tool or not tool:IsA("Tool") then
+	        return
+	    end
+	
+	    RecordBriefcaseItemName(GetActualToolName(tool))
+	end
+	
+	local function ScanBriefcaseForAllItems(case)
+	    if not case then
+	        return
+	    end
+	
+	    for _, obj in ipairs(case:GetDescendants()) do
+	        if obj:IsA("Tool") then
+	            RecordBriefcaseTool(obj)
+	        elseif obj:IsA("ProximityPrompt") then
+	            local action = string.lower(obj.ActionText or "")
+	            if action == "pickup" or action == "pick up" then
+	                RecordBriefcaseItemName(GetPickupObjectName(obj))
+	            end
+	        end
+	    end
+	end
+	
+	-- Use the cached briefcases instead of scanning the entire workspace again.
+	for case in pairs(KnownCases) do
+	    ScanBriefcaseForAllItems(case)
+	end
+	
+	-- Watch only newly-added Tools/Prompts and walk their parent chain.
+	-- This avoids a second workspace-wide DescendantAdded connection.
+	workspace.DescendantAdded:Connect(function(obj)
+	    if not (obj:IsA("Tool") or obj:IsA("ProximityPrompt")) then
+	        return
+	    end
+	
+	    local ancestor = obj.Parent
+	
+	    while ancestor and ancestor ~= workspace do
+	        if IsBriefcaseName(ancestor.Name) then
+	            if obj:IsA("Tool") then
+	                RecordBriefcaseTool(obj)
+	            else
+	                local action = string.lower(obj.ActionText or "")
+	                if action == "pickup" or action == "pick up" then
+	                    RecordBriefcaseItemName(GetPickupObjectName(obj))
+	                end
+	            end
+	            break
+	        end
+	        ancestor = ancestor.Parent
+	    end
+	end)
+	
+	-- Call this from the console whenever you want the complete list found so far.
+	_G.GetBriefcaseItemList = function()
+	    print("================================")
+	    print("ALL BRIEFCASE ITEMS FOUND")
+	    print("================================")
+	
+	    for i, name in ipairs(FoundBriefcaseItems) do
+	        print(i .. ". " .. name)
+	    end
+	
+	    print("================================")
+	    print("TOTAL UNIQUE ITEMS: " .. #FoundBriefcaseItems)
+	    print("================================")
+	
+	    return FoundBriefcaseItems
+	end
+	
+	print("[BRIEFCASE ESP] Master item-name collector loaded.")
+	
+		-- Safe delayed initial discovery. Any unexpected object cannot stop the main script.
+		task.delay(1, function()
+			pcall(function()
+				for _, obj in ipairs(workspace:GetDescendants()) do
+					if IsBriefcaseName(obj.Name) then
+						local model = GetRootModel(obj)
+						if model then
+							AddKnownCase(model)
+						elseif obj:IsA("BasePart") then
+							AddKnownCase(obj)
+						end
+					end
+				end
+				if ESPEnabled then
+					UpdateESP()
+				end
+			end)
+		end)
+		--============================================================
+		-- BRIEFCASE ESP / VISUALS INTEGRATION
+		--============================================================
+	
+		local BriefcaseESPButton = pageButton(
+			VisualPage,
+			"Briefcase ESP: OFF",
+			function()
+				ESPEnabled = not ESPEnabled
+				if ESPEnabled then
+					UpdateESP()
+				else
+					RemoveAllESP()
+				end
+				BriefcaseESPButton.Text = "Briefcase ESP: " .. (ESPEnabled and "ON" or "OFF")
+			end
+		)
+	
+		local BriefcaseContentsButton = pageButton(
+			VisualPage,
+			"Briefcase Contents: OFF",
+			function()
+				ContentsEnabled = not ContentsEnabled
+				for _, case in ipairs(CurrentCases) do
+					local billboard = case:FindFirstChild("BlackBriefcaseInfo")
+					if billboard then
+						local itemLabel = billboard:FindFirstChild("ItemNames")
+						if itemLabel and itemLabel:IsA("TextLabel") then
+							itemLabel.Text = ContentsEnabled and table.concat(GetContents(case), "\n") or ""
+						end
+					end
+				end
+				BriefcaseContentsButton.Text = "Briefcase Contents: " .. (ContentsEnabled and "ON" or "OFF")
+			end
+		)
+	
+		pageButton(
+			VisualPage,
+			"Print Briefcase Items",
+			function()
+				_G.GetBriefcaseItemList()
+			end
+		)end)
+
+if not BriefcaseIntegrationOK then
+	warn("[OCEANA] Briefcase visuals disabled: " .. tostring(BriefcaseIntegrationError))
+end
 
 	--============================================================
 	-- VEHICLE HELPERS
