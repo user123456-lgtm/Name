@@ -216,6 +216,8 @@ else
 			["KLSDWT3245"] = true,
 			["Mzino"] = true,
 			["SOTV"] = true,
+			["ILOVEMYDOG"] = true,
+			["kcfrmdacv"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
 			["OCEANA-002-KEY"] = true,
@@ -2660,25 +2662,37 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 		-- BRIEFCASE ESP / VISUALS INTEGRATION
 		--============================================================
 	
-		local BriefcaseESPButton = pageButton(
+		local BriefcaseESPButton
+		local function updateBriefcaseESPButton()
+			BriefcaseESPButton.Text = "Briefcase ESP: " .. (ESPEnabled and "ON" or "OFF")
+		end
+
+		BriefcaseESPButton = pageButton(
 			VisualPage,
 			"Briefcase ESP: OFF",
 			function()
 				ESPEnabled = not ESPEnabled
+				updateBriefcaseESPButton()
 				if ESPEnabled then
 					UpdateESP()
 				else
 					RemoveAllESP()
 				end
-				BriefcaseESPButton.Text = "Briefcase ESP: " .. (ESPEnabled and "ON" or "OFF")
 			end
 		)
-	
-		local BriefcaseContentsButton = pageButton(
+		updateBriefcaseESPButton()
+
+		local BriefcaseContentsButton
+		local function updateBriefcaseContentsButton()
+			BriefcaseContentsButton.Text = "Briefcase Contents: " .. (ContentsEnabled and "ON" or "OFF")
+		end
+
+		BriefcaseContentsButton = pageButton(
 			VisualPage,
 			"Briefcase Contents: OFF",
 			function()
 				ContentsEnabled = not ContentsEnabled
+				updateBriefcaseContentsButton()
 				for _, case in ipairs(CurrentCases) do
 					local billboard = case:FindFirstChild("BlackBriefcaseInfo")
 					if billboard then
@@ -2688,9 +2702,9 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 						end
 					end
 				end
-				BriefcaseContentsButton.Text = "Briefcase Contents: " .. (ContentsEnabled and "ON" or "OFF")
 			end
 		)
+		updateBriefcaseContentsButton()
 	
 		pageButton(
 			VisualPage,
