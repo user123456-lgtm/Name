@@ -1249,6 +1249,7 @@ else
 	local PlayersPage = createPage("Players")
 	local AutoFarmPage = createPage("Auto Farm")
 	local NittyAutoFarmPage = createPage("Nitty AUTO FARM")
+	local ChatPage = createPage("Chat")
 
 	pageTitle(InfoPage, "Information")
 	pageTitle(PlayerPage, "Player")
@@ -1259,6 +1260,104 @@ else
 	pageTitle(PlayersPage, "Players")
 	pageTitle(AutoFarmPage, "Auto Farm")
 	pageTitle(NittyAutoFarmPage, "Nitty AUTO FARM")
+	pageTitle(ChatPage, "Chat")
+
+	--============================================================
+	-- CHAT PAGE
+	-- Added from Script 11.lua without creating a second GUI.
+	--============================================================
+	do
+		local TextChatService = game:GetService("TextChatService")
+		local running = false
+
+		local ChatMessageBox = create("TextBox", {
+			Name = "ChatMessageBox",
+			BackgroundColor3 = PANEL2,
+			TextColor3 = WHITE,
+			PlaceholderColor3 = MUTED,
+			PlaceholderText = "Message",
+			Text = "/pay 25000",
+			TextSize = 13,
+			Font = Enum.Font.GothamMedium,
+			ClearTextOnFocus = false,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			Size = UDim2.new(1, -10, 0, 42),
+			LayoutOrder = 2,
+		}, ChatPage)
+		corner(ChatMessageBox, 9)
+		stroke(ChatMessageBox, BORDER, 1, 0.3)
+
+		local ChatIntervalBox = create("TextBox", {
+			Name = "ChatIntervalBox",
+			BackgroundColor3 = PANEL2,
+			TextColor3 = WHITE,
+			PlaceholderColor3 = MUTED,
+			PlaceholderText = "Interval",
+			Text = "0.1",
+			TextSize = 13,
+			Font = Enum.Font.GothamMedium,
+			ClearTextOnFocus = false,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			Size = UDim2.new(1, -10, 0, 42),
+			LayoutOrder = 3,
+		}, ChatPage)
+		corner(ChatIntervalBox, 9)
+		stroke(ChatIntervalBox, BORDER, 1, 0.3)
+
+		local ChatStatus = label(
+			ChatPage,
+			"Private repeat test: OFF",
+			UDim2.new(1, -10, 0, 30),
+			UDim2.fromOffset(0, 0),
+			12
+		)
+		ChatStatus.TextColor3 = MUTED
+		ChatStatus.LayoutOrder = 4
+
+		local function sendMessage()
+			local channels = TextChatService:FindFirstChild("TextChannels")
+			local channel = channels and channels:FindFirstChild("RBXGeneral")
+
+			if channel then
+				channel:SendAsync(ChatMessageBox.Text)
+			end
+		end
+
+		local ChatToggleButton
+		ChatToggleButton = pageButton(
+			ChatPage,
+			"Chat Test: OFF",
+			function()
+				running = not running
+
+				if running then
+					ChatToggleButton.Text = "Chat Test: ON"
+					ChatStatus.Text = "Private repeat test: ON"
+					ChatStatus.TextColor3 = GREEN
+
+					-- One real Roblox chat message.
+					sendMessage()
+
+					-- Private repeat test, matching Script 11.lua.
+					task.spawn(function()
+						while running do
+							print("[PRIVATE TEST] " .. ChatMessageBox.Text)
+
+							local delayTime = tonumber(ChatIntervalBox.Text) or 0.1
+							delayTime = math.max(delayTime, 0.05)
+
+							task.wait(delayTime)
+						end
+					end)
+				else
+					ChatToggleButton.Text = "Chat Test: OFF"
+					ChatStatus.Text = "Private repeat test: OFF"
+					ChatStatus.TextColor3 = MUTED
+				end
+			end
+		)
+		ChatToggleButton.LayoutOrder = 5
+	end
 
 	--============================================================
 	-- INFORMATION
@@ -4915,6 +5014,7 @@ end
 		"Players",
 		"Auto Farm",
 		"Nitty AUTO FARM",
+		"Chat",
 	}
 
 	function createSidebarButton(name, index)
