@@ -13,7 +13,7 @@ local RunService = game:GetService("RunService")
 
 if RunService:IsServer() then
 	local KEY_OWNERS = {
-		["Carson19235"] = 9818942971,
+		["Carson19235"] = 9489777743,
 		["AXZDADS1923"] = 8336401677,
 		["SDAWRS8123"] = 10910089999,
 		["KLSDWT3245"] = 11135058989,
@@ -355,7 +355,7 @@ else
 	-- One-account-per-key mapping used when this script is running client-only.
 	-- Server authentication is still preferred when OCEANA_KeyAuth exists.
 	local CLIENT_KEY_OWNERS = {
-		["Carson19235"] = 9818942971,
+		["Carson19235"] = 9489777743,
 		["AXZDADS1923"] = 8336401677,
 		["SDAWRS8123"] = 10910089999,
 		["KLSDWT3245"] = 11135058989,
