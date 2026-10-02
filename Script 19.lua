@@ -20,9 +20,9 @@ if RunService:IsServer() then
 		["Mzino"] = 10980967466,
 		["SOTV"] = 7335573976,
 		["ILOVEMYDOG"] = 10251358614,
-		["?Znt=X~=S!1MD3z[|47"] = 1517326987,
 	["kcfrmdacv"] = 2028754348,
 	["1234"] = 3471832372,
+		["ndsuifhbviuohswbiuoh"] = 1517326987,
 		["OCEANA-001-KEY"] = 0,
 		["OCEANA-002-KEY"] = 0,
 		["OCEANA-003-KEY"] = 0,
@@ -221,6 +221,7 @@ else
 			["ILOVEMYDOG"] = true,
 			["kcfrmdacv"] = true,
 			["1234"] = true,
+			["ndsuifhbviuohswbiuoh"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
 			["OCEANA-002-KEY"] = true,
@@ -358,6 +359,7 @@ else
 	-- One-account-per-key mapping used when this script is running client-only.
 	-- Server authentication is still preferred when OCEANA_KeyAuth exists.
 	local CLIENT_KEY_OWNERS = {
+		["ndsuifhbviuohswbiuoh"] = 1517326987,
 		["Carson19235"] = 9489777743,
 		["AXZDADS1923"] = 8336401677,
 		["SDAWRS8123"] = 10910089999,
@@ -367,7 +369,6 @@ else
 		["ILOVEMYDOG"] = 10251358614,
 	["kcfrmdacv"] = 2028754348,
 	["1234"] = 3471832372,
-		["?Znt=X~=S!1MD3z[|47"] = 1517326987,
 	}
 
 	--============================================================
