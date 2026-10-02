@@ -23,7 +23,7 @@ if RunService:IsServer() then
 	["kcfrmdacv"] = 2028754348,
 	["1234"] = 3471832372,
 		["Mossco876"] = 11230344737,
-		["OCEANA-001-KEY"] = 0,
+		["?Znt=X~=S!1MD3z[|47"] = 1517326987,
 		["OCEANA-002-KEY"] = 0,
 		["OCEANA-003-KEY"] = 0,
 		["OCEANA-004-KEY"] = 0,
