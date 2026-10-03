@@ -1481,7 +1481,9 @@ else
 		Flying = true
 
 		Humanoid.AutoRotate = false
-		Humanoid.PlatformStand = true
+		-- Keep Humanoid controls available so mobile thumbstick and
+		-- controller stick input can be used while flying.
+		Humanoid.PlatformStand = false
 
 		FlyBV = Instance.new("BodyVelocity")
 		FlyBV.Name = "AdminFlyVelocity"
@@ -5248,75 +5250,143 @@ end
 		D = false,
 		Space = false,
 		LeftControl = false,
+		GamepadUp = false,
+		GamepadDown = false,
 	}
 
+	local MobileFlyUp = nil
+	local MobileFlyDown = nil
+
+	local function setFlyKey(key, state)
+		FlyKeys[key] = state
+	end
+
 	UserInputService.InputBegan:Connect(function(input, processed)
-		if processed then
-			return
-		end
-
 		if input.KeyCode == Enum.KeyCode.W then
-			FlyKeys.W = true
-
+			setFlyKey("W", true)
 		elseif input.KeyCode == Enum.KeyCode.A then
-			FlyKeys.A = true
-
+			setFlyKey("A", true)
 		elseif input.KeyCode == Enum.KeyCode.S then
-			FlyKeys.S = true
-
+			setFlyKey("S", true)
 		elseif input.KeyCode == Enum.KeyCode.D then
-			FlyKeys.D = true
-
+			setFlyKey("D", true)
 		elseif input.KeyCode == Enum.KeyCode.Space then
-			FlyKeys.Space = true
-
+			setFlyKey("Space", true)
 		elseif input.KeyCode == Enum.KeyCode.LeftControl then
-			FlyKeys.LeftControl = true
+			setFlyKey("LeftControl", true)
+		elseif input.KeyCode == Enum.KeyCode.ButtonA then
+			setFlyKey("GamepadUp", true)
+		elseif input.KeyCode == Enum.KeyCode.ButtonB then
+			setFlyKey("GamepadDown", true)
+		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
+			AimHolding = true
 		end
 	end)
 
 	UserInputService.InputEnded:Connect(function(input)
 		if input.KeyCode == Enum.KeyCode.W then
-			FlyKeys.W = false
-
+			setFlyKey("W", false)
 		elseif input.KeyCode == Enum.KeyCode.A then
-			FlyKeys.A = false
-
+			setFlyKey("A", false)
 		elseif input.KeyCode == Enum.KeyCode.S then
-			FlyKeys.S = false
-
+			setFlyKey("S", false)
 		elseif input.KeyCode == Enum.KeyCode.D then
-			FlyKeys.D = false
-
+			setFlyKey("D", false)
 		elseif input.KeyCode == Enum.KeyCode.Space then
-			FlyKeys.Space = false
-
+			setFlyKey("Space", false)
 		elseif input.KeyCode == Enum.KeyCode.LeftControl then
-			FlyKeys.LeftControl = false
-
-		elseif input.UserInputType ==
-			Enum.UserInputType.MouseButton2 then
-
+			setFlyKey("LeftControl", false)
+		elseif input.KeyCode == Enum.KeyCode.ButtonA then
+			setFlyKey("GamepadUp", false)
+		elseif input.KeyCode == Enum.KeyCode.ButtonB then
+			setFlyKey("GamepadDown", false)
+		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
 			AimHolding = false
 			CurrentTarget = nil
 		end
 	end)
 
+	-- Mobile-only vertical fly controls. The normal mobile thumbstick
+	-- controls forward/back/left/right through Humanoid.MoveDirection.
+	if UserInputService.TouchEnabled and not UserInputService.MouseEnabled then
+		local FlyTouchGui = create("ScreenGui", {
+			Name = "OCEANA Mobile Fly Controls",
+			ResetOnSpawn = false,
+			IgnoreGuiInset = true,
+			DisplayOrder = 60,
+		}, PlayerGui)
+
+		local function makeFlyTouchButton(name, text, position)
+			local b = create("TextButton", {
+				Name = name,
+				BackgroundColor3 = PANEL2,
+				BackgroundTransparency = 0.15,
+				Text = text,
+				TextColor3 = WHITE,
+				TextSize = 20,
+				Font = Enum.Font.GothamBold,
+				Size = UDim2.fromOffset(58, 58),
+				Position = position,
+				Visible = false,
+				AutoButtonColor = false,
+			}, FlyTouchGui)
+			corner(b, 12)
+			stroke(b, BLUE, 1, 0.2)
+			return b
+		end
+
+		MobileFlyUp = makeFlyTouchButton(
+			"FlyUp",
+			"▲",
+			UDim2.new(1, -140, 1, -190)
+		)
+
+		MobileFlyDown = makeFlyTouchButton(
+			"FlyDown",
+			"▼",
+			UDim2.new(1, -140, 1, -120)
+		)
+
+		local function updateMobileFlyControls()
+			local visible = Flying
+			MobileFlyUp.Visible = visible
+			MobileFlyDown.Visible = visible
+		end
+
+		MobileFlyUp.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch
+				or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				setFlyKey("Space", true)
+			end
+		end)
+
+		MobileFlyUp.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch
+				or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				setFlyKey("Space", false)
+			end
+		end)
+
+		MobileFlyDown.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch
+				or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				setFlyKey("LeftControl", true)
+			end
+		end)
+
+		MobileFlyDown.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch
+				or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				setFlyKey("LeftControl", false)
+			end
+		end)
+
+		RunService.RenderStepped:Connect(updateMobileFlyControls)
+	end
+
 	--============================================================
 	-- RIGHT MOUSE AIM
 	--============================================================
-
-	UserInputService.InputBegan:Connect(function(input, processed)
-		if processed then
-			return
-		end
-
-		if input.UserInputType ==
-			Enum.UserInputType.MouseButton2 then
-
-			AimHolding = true
-		end
-	end)
 
 	--============================================================
 	-- NOCLIP
@@ -5356,9 +5426,17 @@ end
 			return
 		end
 
-		Humanoid.PlatformStand = true
-
+		-- Do not force PlatformStand here: mobile and controller
+		-- movement is read from the normal Humanoid controls.
 		local direction = Vector3.zero
+
+		local moveDirection = Humanoid.MoveDirection
+		if moveDirection.Magnitude > 0.01 then
+			local flatMove = Vector3.new(moveDirection.X, 0, moveDirection.Z)
+			if flatMove.Magnitude > 0.01 then
+				direction += flatMove.Unit
+			end
+		end
 
 		if FlyKeys.W then
 			direction += camera.CFrame.LookVector
@@ -5376,11 +5454,11 @@ end
 			direction += camera.CFrame.RightVector
 		end
 
-		if FlyKeys.Space then
+		if FlyKeys.Space or FlyKeys.GamepadUp then
 			direction += Vector3.yAxis
 		end
 
-		if FlyKeys.LeftControl then
+		if FlyKeys.LeftControl or FlyKeys.GamepadDown then
 			direction -= Vector3.yAxis
 		end
 
