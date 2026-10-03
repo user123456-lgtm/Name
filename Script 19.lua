@@ -23,6 +23,7 @@ if RunService:IsServer() then
 	["kcfrmdacv"] = 5374860987,
 	["1234"] = 3471832372,
 		["ndsuifhbviuohswbiuoh"] = 1517326987,
+		["18200"] = 1709678602,
 		["OCEANA-001-KEY"] = 0,
 		["OCEANA-002-KEY"] = 0,
 		["OCEANA-003-KEY"] = 0,
@@ -222,6 +223,7 @@ else
 			["kcfrmdacv"] = true,
 			["1234"] = true,
 			["ndsuifhbviuohswbiuoh"] = true,
+			["18200"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
 			["OCEANA-002-KEY"] = true,
@@ -360,6 +362,7 @@ else
 	-- Server authentication is still preferred when OCEANA_KeyAuth exists.
 	local CLIENT_KEY_OWNERS = {
 		["ndsuifhbviuohswbiuoh"] = 1517326987,
+		["18200"] = 1709678602,
 		["Carson19235"] = 9489777743,
 		["AXZDADS1923"] = 8336401677,
 		["SDAWRS8123"] = 10910089999,
