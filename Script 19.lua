@@ -5322,16 +5322,30 @@ end
 	-- NOCLIP
 	--============================================================
 
-	RunService.Stepped:Connect(function()
-		if not Noclip or not Character then
+	local NoclipOriginalCollision = {}
+
+	local function setNoclipCollision(enabled)
+		if not Character then
 			return
 		end
 
 		for _, part in ipairs(Character:GetDescendants()) do
 			if part:IsA("BasePart") then
-				part.CanCollide = false
+				if enabled then
+					if NoclipOriginalCollision[part] == nil then
+						NoclipOriginalCollision[part] = part.CanCollide
+					end
+					part.CanCollide = false
+				elseif NoclipOriginalCollision[part] ~= nil then
+					part.CanCollide = NoclipOriginalCollision[part]
+					NoclipOriginalCollision[part] = nil
+				end
 			end
 		end
+	end
+
+	RunService.Stepped:Connect(function()
+		setNoclipCollision(Noclip)
 	end)
 
 	--============================================================
