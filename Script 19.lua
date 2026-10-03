@@ -1251,11 +1251,119 @@ else
 
 		b.LayoutOrder = #page:GetChildren() + 1
 
+		-- ON/OFF controls use a compact pill switch. The ON color is
+		-- the same blue used by the GUI outline.
+		local toggleName, toggleState = string.match(text, "^(.-):%s*(%a+)$")
+		if toggleName and (toggleState == "ON" or toggleState == "OFF") then
+			b.TextTransparency = 1
+
+			local toggleLabel = label(
+				b,
+				toggleName,
+				UDim2.new(1, -70, 1, 0),
+				UDim2.fromOffset(14, 0),
+				13
+			)
+			toggleLabel.Font = Enum.Font.GothamMedium
+			toggleLabel.ZIndex = 3
+
+			local track = create("Frame", {
+				Name = "ToggleTrack",
+				BackgroundColor3 = BORDER,
+				BorderSizePixel = 0,
+				AnchorPoint = Vector2.new(1, 0.5),
+				Position = UDim2.new(1, -12, 0.5, 0),
+				Size = UDim2.fromOffset(36, 20),
+				ZIndex = 3,
+			}, b)
+			corner(track, 10)
+
+			local knob = create("Frame", {
+				Name = "ToggleKnob",
+				BackgroundColor3 = WHITE,
+				BorderSizePixel = 0,
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				Size = UDim2.fromOffset(14, 14),
+				ZIndex = 4,
+			}, track)
+			corner(knob, 7)
+
+			local function refreshToggle()
+				local state = string.match(b.Text, ":%s*(%a+)$")
+				local enabled = state == "ON"
+				toggleLabel.Text = toggleName
+				track.BackgroundColor3 = enabled and BLUE or BORDER
+				knob.Position = enabled
+					and UDim2.new(1, -9, 0.5, 0)
+					or UDim2.new(0, 9, 0.5, 0)
+			end
+
+			b:GetPropertyChangedSignal("Text"):Connect(refreshToggle)
+			refreshToggle()
+		end
+
 		if callback then
 			b.MouseButton1Click:Connect(callback)
 		end
 
 		return b
+	end
+
+	-- Reusable draggable slider for the Player page. Supports mouse and touch.
+	local function pageSlider(page, titleText, minValue, maxValue, initialValue, callback)
+		local row = create("Frame", {
+			Name = titleText:gsub("%W", "") .. "Slider",
+			BackgroundColor3 = PANEL2,
+			Size = UDim2.new(1, -10, 0, 64),
+			LayoutOrder = #page:GetChildren() + 1,
+		}, page)
+		corner(row, 9)
+		stroke(row, BORDER, 1, 0.3)
+
+		local valueLabel = label(row, titleText .. ": " .. tostring(initialValue),
+			UDim2.new(1, -20, 0, 23), UDim2.fromOffset(10, 5), 12)
+		valueLabel.Font = Enum.Font.GothamMedium
+
+		local track = create("TextButton", {
+			Name = "Track", Text = "", AutoButtonColor = false,
+			BackgroundColor3 = BORDER, BorderSizePixel = 0,
+			Position = UDim2.new(0, 12, 0, 39), Size = UDim2.new(1, -24, 0, 8),
+		}, row)
+		corner(track, 5)
+		local fill = create("Frame", {BackgroundColor3 = BLUE, BorderSizePixel = 0, Size = UDim2.new(0, 0, 1, 0)}, track)
+		corner(fill, 5)
+		local knob = create("Frame", {BackgroundColor3 = WHITE, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0, 0, 0.5, 0), Size = UDim2.fromOffset(16, 16), ZIndex = 3}, track)
+		corner(knob, 8)
+
+		local value = math.clamp(initialValue, minValue, maxValue)
+		local dragging = false
+		local function setFromX(x)
+			local width = math.max(track.AbsoluteSize.X, 1)
+			local alpha = math.clamp((x - track.AbsolutePosition.X) / width, 0, 1)
+			value = math.floor(minValue + (maxValue - minValue) * alpha + 0.5)
+			fill.Size = UDim2.new(alpha, 0, 1, 0)
+			knob.Position = UDim2.new(alpha, 0, 0.5, 0)
+			valueLabel.Text = titleText .. ": " .. tostring(value)
+			callback(value)
+		end
+		local function begin(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				setFromX(input.Position.X)
+			end
+		end
+		track.InputBegan:Connect(begin)
+		knob.InputBegan:Connect(begin)
+		UserInputService.InputChanged:Connect(function(input)
+			if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then setFromX(input.Position.X) end
+		end)
+		UserInputService.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
+		end)
+		local alpha = (value - minValue) / (maxValue - minValue)
+		fill.Size = UDim2.new(alpha, 0, 1, 0)
+		knob.Position = UDim2.new(alpha, 0, 0.5, 0)
+		return row
 	end
 
 	local InfoPage = createPage("Information")
@@ -1397,15 +1505,27 @@ else
 	--============================================================
 
 	local WalkToggleButton
-	local SpeedButton
-	local JumpButton
 	local FlyButton
 	local NoclipButton
 	local PickupButton
 
+	pageSlider(PlayerPage, "Walk Speed", 16, 32, Config.WALK_SPEED, function(value)
+		Config.WALK_SPEED = value
+		applyWalkSpeed()
+	end)
+
+	pageSlider(PlayerPage, "Jump Power", 50, 150, Config.JUMP_POWER, function(value)
+		Config.JUMP_POWER = value
+		applyJumpPower()
+	end)
+
+	pageSlider(PlayerPage, "Fly Speed", 30, 70, Config.FLY_SPEED, function(value)
+		Config.FLY_SPEED = value
+	end)
+
 	WalkToggleButton = pageButton(
 		PlayerPage,
-		"Walk Speed: OFF",
+		"Walk Speed: " .. (Config.WALK_SPEED_ENABLED and "ON" or "OFF"),
 		function()
 			Config.WALK_SPEED_ENABLED = not Config.WALK_SPEED_ENABLED
 
@@ -1414,54 +1534,6 @@ else
 				(Config.WALK_SPEED_ENABLED and "ON" or "OFF")
 
 			applyWalkSpeed()
-		end
-	)
-
-	SpeedButton = pageButton(
-		PlayerPage,
-		"Walk Speed Value: 32",
-		function()
-			if Config.WALK_SPEED == 16 then
-				Config.WALK_SPEED = 24
-			elseif Config.WALK_SPEED == 24 then
-				Config.WALK_SPEED = 32
-			elseif Config.WALK_SPEED == 32 then
-				Config.WALK_SPEED = 40
-			elseif Config.WALK_SPEED == 40 then
-				Config.WALK_SPEED = 60
-			elseif Config.WALK_SPEED == 60 then
-				Config.WALK_SPEED = 80
-			elseif Config.WALK_SPEED == 80 then
-				Config.WALK_SPEED = 100
-			else
-				Config.WALK_SPEED = 16
-			end
-
-			SpeedButton.Text =
-				"Walk Speed Value: " .. Config.WALK_SPEED
-
-			applyWalkSpeed()
-		end
-	)
-
-	JumpButton = pageButton(
-		PlayerPage,
-		"Jump Power: 50",
-		function()
-			if Config.JUMP_POWER == 50 then
-				Config.JUMP_POWER = 75
-			elseif Config.JUMP_POWER == 75 then
-				Config.JUMP_POWER = 100
-			elseif Config.JUMP_POWER == 100 then
-				Config.JUMP_POWER = 150
-			else
-				Config.JUMP_POWER = 50
-			end
-
-			JumpButton.Text =
-				"Jump Power: " .. Config.JUMP_POWER
-
-			applyJumpPower()
 		end
 	)
 
@@ -1592,35 +1664,6 @@ else
 		function()
 			if Humanoid then
 				Humanoid.Health = 0
-			end
-		end
-	)
-
-	pageButton(
-		PlayerPage,
-		"Fly Speed: 70",
-		function()
-			if Config.FLY_SPEED == 30 then
-				Config.FLY_SPEED = 50
-			elseif Config.FLY_SPEED == 50 then
-				Config.FLY_SPEED = 70
-			elseif Config.FLY_SPEED == 70 then
-				Config.FLY_SPEED = 100
-			elseif Config.FLY_SPEED == 100 then
-				Config.FLY_SPEED = 150
-			else
-				Config.FLY_SPEED = 30
-			end
-
-			for _, child in ipairs(PlayerPage:GetChildren()) do
-				if child:IsA("TextButton")
-					and string.find(child.Text, "Fly Speed:", 1, true) then
-
-					child.Text =
-						"Fly Speed: " .. Config.FLY_SPEED
-
-					break
-				end
 			end
 		end
 	)
@@ -4474,11 +4517,9 @@ end
 	SelectedPlayerStatus.TextColor3 = MUTED
 	SelectedPlayerStatus.LayoutOrder = 3
 
-	local SpectateButton = button(
+	local SpectateButton = pageButton(
 		PlayersPage,
-		"Spectate: OFF",
-		UDim2.fromOffset(0, 0),
-		UDim2.new(1, -10, 0, 38)
+		"Spectate: OFF"
 	)
 	SpectateButton.LayoutOrder = 4
 
@@ -4490,11 +4531,9 @@ end
 	)
 	SpectateViewButton.LayoutOrder = 5
 
-	local InventoryButton = button(
+	local InventoryButton = pageButton(
 		PlayersPage,
-		"Inventory: OFF",
-		UDim2.fromOffset(0, 0),
-		UDim2.new(1, -10, 0, 38)
+		"Inventory: OFF"
 	)
 	InventoryButton.LayoutOrder = 6
 
