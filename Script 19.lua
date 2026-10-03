@@ -5303,6 +5303,76 @@ end
 	end)
 
 	--============================================================
+	-- MOBILE FLY CONTROLS
+	-- Touch devices only; Nitty AUTO FARM is untouched.
+	--============================================================
+	if UserInputService.TouchEnabled and not UserInputService.MouseEnabled then
+		local MobileFlyGui = create("ScreenGui", {
+			Name = "OCEANA Mobile Fly Controls",
+			ResetOnSpawn = false,
+			IgnoreGuiInset = true,
+			DisplayOrder = 60,
+		}, PlayerGui)
+
+		local MobileFlyFrame = create("Frame", {
+			BackgroundTransparency = 1,
+			Size = UDim2.fromOffset(220, 190),
+			Position = UDim2.new(1, -235, 1, -205),
+		}, MobileFlyGui)
+
+		local function mobileFlyButton(name, text, position)
+			local b = create("TextButton", {
+				Name = name,
+				BackgroundColor3 = PANEL2,
+				BackgroundTransparency = 0.15,
+				Text = text,
+				TextColor3 = WHITE,
+				TextSize = 16,
+				Font = Enum.Font.GothamBold,
+				AutoButtonColor = true,
+				Size = UDim2.fromOffset(58, 50),
+				Position = position,
+			}, MobileFlyFrame)
+			corner(b, 12)
+			stroke(b, BORDER, 1, 0.15)
+			return b
+		end
+
+		local mobileButtons = {
+			W = mobileFlyButton("Forward", "▲", UDim2.fromOffset(81, 0)),
+			A = mobileFlyButton("Left", "◀", UDim2.fromOffset(20, 52)),
+			S = mobileFlyButton("Back", "▼", UDim2.fromOffset(81, 52)),
+			D = mobileFlyButton("Right", "▶", UDim2.fromOffset(142, 52)),
+			Space = mobileFlyButton("Up", "UP", UDim2.fromOffset(20, 110)),
+			LeftControl = mobileFlyButton("Down", "DOWN", UDim2.fromOffset(142, 110)),
+		}
+
+		local function bindHold(buttonObject, keyName)
+			buttonObject.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch
+					or input.UserInputType == Enum.UserInputType.MouseButton1 then
+					FlyKeys[keyName] = true
+				end
+			end)
+
+			buttonObject.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch
+					or input.UserInputType == Enum.UserInputType.MouseButton1 then
+					FlyKeys[keyName] = false
+				end
+			end)
+		end
+
+		for keyName, buttonObject in pairs(mobileButtons) do
+			bindHold(buttonObject, keyName)
+		end
+
+		RunService.RenderStepped:Connect(function()
+			MobileFlyGui.Enabled = Flying
+		end)
+	end
+
+	--============================================================
 	-- RIGHT MOUSE AIM
 	--============================================================
 
