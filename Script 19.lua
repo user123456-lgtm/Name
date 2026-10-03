@@ -1057,6 +1057,15 @@ else
 	corner(MainFrame, 18)
 	stroke(MainFrame, BLUE, 1, 0.45)
 
+	-- Mobile only: scale the existing GUI down so it fits phone screens.
+	-- PC layout is completely unchanged.
+	if UserInputService.TouchEnabled and not UserInputService.MouseEnabled then
+		local MobileScale = Instance.new("UIScale")
+		MobileScale.Name = "MobileGUIScale"
+		MobileScale.Scale = 0.72
+		MobileScale.Parent = MainFrame
+	end
+
 	--============================================================
 	-- TOP BAR
 	--============================================================
@@ -5200,6 +5209,33 @@ end
 				MainFrame.Visible
 		end
 	end)
+
+	--============================================================
+	-- MOBILE SHOW / UNSHOW BUTTON
+	-- Mobile touch devices only; never shown on PC.
+	--============================================================
+	if UserInputService.TouchEnabled and not UserInputService.MouseEnabled then
+		local MobileShowButton = create("TextButton", {
+			Name = "MobileShowButton",
+			BackgroundColor3 = PANEL2,
+			TextColor3 = WHITE,
+			Text = "Unshow",
+			TextSize = 13,
+			Font = Enum.Font.GothamBold,
+			AutoButtonColor = true,
+			Size = UDim2.fromOffset(78, 38),
+			Position = UDim2.new(1, -88, 0, 12),
+			ZIndex = 100,
+		}, GUI)
+		corner(MobileShowButton, 10)
+		stroke(MobileShowButton, BORDER, 1, 0.15)
+
+		MobileShowButton.Activated:Connect(function()
+			MainFrame.Visible = not MainFrame.Visible
+			MenuVisible = MainFrame.Visible
+			MobileShowButton.Text = MainFrame.Visible and "Unshow" or "Show"
+		end)
+	end
 
 	--============================================================
 	-- FLY INPUT
