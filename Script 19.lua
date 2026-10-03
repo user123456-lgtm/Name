@@ -1469,10 +1469,6 @@ else
 	-- FLY
 	--============================================================
 
-	local FLY_ACCELERATION = 7
-	local FLY_DECELERATION = 10
-	local flyVelocityState = Vector3.zero
-
 	local function startFly()
 		if Flying then
 			return
@@ -1483,12 +1479,9 @@ else
 		end
 
 		Flying = true
-		flyVelocityState = Vector3.zero
 
 		Humanoid.AutoRotate = false
-		-- Keep Humanoid controls available so mobile thumbstick and
-		-- controller stick input can be used while flying.
-		Humanoid.PlatformStand = false
+		Humanoid.PlatformStand = true
 
 		FlyBV = Instance.new("BodyVelocity")
 		FlyBV.Name = "AdminFlyVelocity"
@@ -1508,7 +1501,6 @@ else
 
 	local function stopFly()
 		Flying = false
-		flyVelocityState = Vector3.zero
 
 		if FlyBV then
 			FlyBV:Destroy()
@@ -5256,143 +5248,75 @@ end
 		D = false,
 		Space = false,
 		LeftControl = false,
-		GamepadUp = false,
-		GamepadDown = false,
 	}
 
-	local MobileFlyUp = nil
-	local MobileFlyDown = nil
-
-	local function setFlyKey(key, state)
-		FlyKeys[key] = state
-	end
-
 	UserInputService.InputBegan:Connect(function(input, processed)
+		if processed then
+			return
+		end
+
 		if input.KeyCode == Enum.KeyCode.W then
-			setFlyKey("W", true)
+			FlyKeys.W = true
+
 		elseif input.KeyCode == Enum.KeyCode.A then
-			setFlyKey("A", true)
+			FlyKeys.A = true
+
 		elseif input.KeyCode == Enum.KeyCode.S then
-			setFlyKey("S", true)
+			FlyKeys.S = true
+
 		elseif input.KeyCode == Enum.KeyCode.D then
-			setFlyKey("D", true)
+			FlyKeys.D = true
+
 		elseif input.KeyCode == Enum.KeyCode.Space then
-			setFlyKey("Space", true)
+			FlyKeys.Space = true
+
 		elseif input.KeyCode == Enum.KeyCode.LeftControl then
-			setFlyKey("LeftControl", true)
-		elseif input.KeyCode == Enum.KeyCode.ButtonA then
-			setFlyKey("GamepadUp", true)
-		elseif input.KeyCode == Enum.KeyCode.ButtonB then
-			setFlyKey("GamepadDown", true)
-		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
-			AimHolding = true
+			FlyKeys.LeftControl = true
 		end
 	end)
 
 	UserInputService.InputEnded:Connect(function(input)
 		if input.KeyCode == Enum.KeyCode.W then
-			setFlyKey("W", false)
+			FlyKeys.W = false
+
 		elseif input.KeyCode == Enum.KeyCode.A then
-			setFlyKey("A", false)
+			FlyKeys.A = false
+
 		elseif input.KeyCode == Enum.KeyCode.S then
-			setFlyKey("S", false)
+			FlyKeys.S = false
+
 		elseif input.KeyCode == Enum.KeyCode.D then
-			setFlyKey("D", false)
+			FlyKeys.D = false
+
 		elseif input.KeyCode == Enum.KeyCode.Space then
-			setFlyKey("Space", false)
+			FlyKeys.Space = false
+
 		elseif input.KeyCode == Enum.KeyCode.LeftControl then
-			setFlyKey("LeftControl", false)
-		elseif input.KeyCode == Enum.KeyCode.ButtonA then
-			setFlyKey("GamepadUp", false)
-		elseif input.KeyCode == Enum.KeyCode.ButtonB then
-			setFlyKey("GamepadDown", false)
-		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
+			FlyKeys.LeftControl = false
+
+		elseif input.UserInputType ==
+			Enum.UserInputType.MouseButton2 then
+
 			AimHolding = false
 			CurrentTarget = nil
 		end
 	end)
 
-	-- Mobile-only vertical fly controls. The normal mobile thumbstick
-	-- controls forward/back/left/right through Humanoid.MoveDirection.
-	if UserInputService.TouchEnabled and not UserInputService.MouseEnabled then
-		local FlyTouchGui = create("ScreenGui", {
-			Name = "OCEANA Mobile Fly Controls",
-			ResetOnSpawn = false,
-			IgnoreGuiInset = true,
-			DisplayOrder = 60,
-		}, PlayerGui)
-
-		local function makeFlyTouchButton(name, text, position)
-			local b = create("TextButton", {
-				Name = name,
-				BackgroundColor3 = PANEL2,
-				BackgroundTransparency = 0.15,
-				Text = text,
-				TextColor3 = WHITE,
-				TextSize = 20,
-				Font = Enum.Font.GothamBold,
-				Size = UDim2.fromOffset(58, 58),
-				Position = position,
-				Visible = false,
-				AutoButtonColor = false,
-			}, FlyTouchGui)
-			corner(b, 12)
-			stroke(b, BLUE, 1, 0.2)
-			return b
-		end
-
-		MobileFlyUp = makeFlyTouchButton(
-			"FlyUp",
-			"▲",
-			UDim2.new(1, -140, 1, -190)
-		)
-
-		MobileFlyDown = makeFlyTouchButton(
-			"FlyDown",
-			"▼",
-			UDim2.new(1, -140, 1, -120)
-		)
-
-		local function updateMobileFlyControls()
-			local visible = Flying
-			MobileFlyUp.Visible = visible
-			MobileFlyDown.Visible = visible
-		end
-
-		MobileFlyUp.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.Touch
-				or input.UserInputType == Enum.UserInputType.MouseButton1 then
-				setFlyKey("Space", true)
-			end
-		end)
-
-		MobileFlyUp.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.Touch
-				or input.UserInputType == Enum.UserInputType.MouseButton1 then
-				setFlyKey("Space", false)
-			end
-		end)
-
-		MobileFlyDown.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.Touch
-				or input.UserInputType == Enum.UserInputType.MouseButton1 then
-				setFlyKey("LeftControl", true)
-			end
-		end)
-
-		MobileFlyDown.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.Touch
-				or input.UserInputType == Enum.UserInputType.MouseButton1 then
-				setFlyKey("LeftControl", false)
-			end
-		end)
-
-		RunService.RenderStepped:Connect(updateMobileFlyControls)
-	end
-
 	--============================================================
 	-- RIGHT MOUSE AIM
 	--============================================================
+
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if processed then
+			return
+		end
+
+		if input.UserInputType ==
+			Enum.UserInputType.MouseButton2 then
+
+			AimHolding = true
+		end
+	end)
 
 	--============================================================
 	-- NOCLIP
@@ -5432,17 +5356,9 @@ end
 			return
 		end
 
-		-- Do not force PlatformStand here: mobile and controller
-		-- movement is read from the normal Humanoid controls.
-		local direction = Vector3.zero
+		Humanoid.PlatformStand = true
 
-		local moveDirection = Humanoid.MoveDirection
-		if moveDirection.Magnitude > 0.01 then
-			local flatMove = Vector3.new(moveDirection.X, 0, moveDirection.Z)
-			if flatMove.Magnitude > 0.01 then
-				direction += flatMove.Unit
-			end
-		end
+		local direction = Vector3.zero
 
 		if FlyKeys.W then
 			direction += camera.CFrame.LookVector
@@ -5460,11 +5376,11 @@ end
 			direction += camera.CFrame.RightVector
 		end
 
-		if FlyKeys.Space or FlyKeys.GamepadUp then
+		if FlyKeys.Space then
 			direction += Vector3.yAxis
 		end
 
-		if FlyKeys.LeftControl or FlyKeys.GamepadDown then
+		if FlyKeys.LeftControl then
 			direction -= Vector3.yAxis
 		end
 
@@ -5473,11 +5389,8 @@ end
 		end
 
 		if FlyBV then
-			local targetVelocity = direction * Config.FLY_SPEED
-			local rate = direction.Magnitude > 0 and FLY_ACCELERATION or FLY_DECELERATION
-			local alpha = math.clamp(rate * math.max(0.001, RunService.RenderStepped:Wait()), 0, 1)
-			flyVelocityState = flyVelocityState:Lerp(targetVelocity, alpha)
-			FlyBV.Velocity = flyVelocityState
+			FlyBV.Velocity =
+				direction * Config.FLY_SPEED
 		end
 
 		if FlyBG then
