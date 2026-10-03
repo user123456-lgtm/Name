@@ -1469,6 +1469,10 @@ else
 	-- FLY
 	--============================================================
 
+	local FLY_ACCELERATION = 7
+	local FLY_DECELERATION = 10
+	local flyVelocityState = Vector3.zero
+
 	local function startFly()
 		if Flying then
 			return
@@ -1479,6 +1483,7 @@ else
 		end
 
 		Flying = true
+		flyVelocityState = Vector3.zero
 
 		Humanoid.AutoRotate = false
 		-- Keep Humanoid controls available so mobile thumbstick and
@@ -1503,6 +1508,7 @@ else
 
 	local function stopFly()
 		Flying = false
+		flyVelocityState = Vector3.zero
 
 		if FlyBV then
 			FlyBV:Destroy()
@@ -5467,8 +5473,11 @@ end
 		end
 
 		if FlyBV then
-			FlyBV.Velocity =
-				direction * Config.FLY_SPEED
+			local targetVelocity = direction * Config.FLY_SPEED
+			local rate = direction.Magnitude > 0 and FLY_ACCELERATION or FLY_DECELERATION
+			local alpha = math.clamp(rate * math.max(0.001, RunService.RenderStepped:Wait()), 0, 1)
+			flyVelocityState = flyVelocityState:Lerp(targetVelocity, alpha)
+			FlyBV.Velocity = flyVelocityState
 		end
 
 		if FlyBG then
