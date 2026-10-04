@@ -1188,6 +1188,33 @@ else
 	SidebarTitle.TextColor3 = MUTED
 	SidebarTitle.Font = Enum.Font.GothamBold
 
+	local SidebarList = create("ScrollingFrame", {
+		Name = "SidebarList",
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Size = UDim2.new(1, -8, 1, -52),
+		Position = UDim2.fromOffset(4, 48),
+		CanvasSize = UDim2.new(),
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		ScrollBarThickness = 3,
+		ScrollBarImageColor3 = BLUE,
+		ScrollBarImageTransparency = 0.2,
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		VerticalScrollBarInset = Enum.ScrollBarInset.None,
+		ZIndex = 15,
+	}, Sidebar)
+
+	create("UIPadding", {
+		PaddingLeft = UDim.new(0, 6),
+		PaddingRight = UDim.new(0, 6),
+		PaddingBottom = UDim.new(0, 8),
+	}, SidebarList)
+
+	create("UIListLayout", {
+		Padding = UDim.new(0, 4),
+		SortOrder = Enum.SortOrder.LayoutOrder,
+	}, SidebarList)
+
 	MainContent = create("Frame", {
 		Name = "MainContent",
 		BackgroundTransparency = 1,
@@ -1379,6 +1406,7 @@ else
 	local AutoFarmPage = createPage("Auto Farm")
 	local NittyAutoFarmPage = createPage("Nitty AUTO FARM")
 	local ChatPage = createPage("Chat")
+	local NameChangerPage = createPage("Name Changer")
 
 	pageTitle(InfoPage, "Information")
 	pageTitle(PlayerPage, "Player")
@@ -1390,6 +1418,168 @@ else
 	pageTitle(AutoFarmPage, "Auto Farm")
 	pageTitle(NittyAutoFarmPage, "Nitty AUTO FARM")
 	pageTitle(ChatPage, "Chat")
+	pageTitle(NameChangerPage, "Name Changer")
+
+	--============================================================
+	-- NAME CHANGER
+	-- Changes the two visible name lines above your character locally.
+	-- The first line is the Roblox display name; the second line is
+	-- matched against the game's visible username/UserId text.
+	--============================================================
+	do
+		local originalLabelText = {}
+		local customDisplayName = ""
+		local customSecondLine = ""
+
+		local function getCharacter()
+			return LocalPlayer.Character
+		end
+
+		local function isNameLineText(text)
+			if typeof(text) ~= "string" or text == "" then
+				return false
+			end
+
+			local trimmed = text:gsub("^%s+", ""):gsub("%s+$", "")
+			return trimmed == LocalPlayer.Name
+				or trimmed == LocalPlayer.DisplayName
+				or trimmed == tostring(LocalPlayer.UserId)
+				or trimmed == customDisplayName
+				or trimmed == customSecondLine
+				or originalLabelText[text] == true
+		end
+
+		local function applyNameChanger()
+			local character = getCharacter()
+			if not character then
+				return
+			end
+
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			if humanoid and customDisplayName ~= "" then
+				pcall(function()
+					humanoid.DisplayName = customDisplayName
+				end)
+			end
+
+			if customSecondLine == "" and customDisplayName == "" then
+				return
+			end
+
+			for _, obj in ipairs(character:GetDescendants()) do
+				if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+					local text = obj.Text
+					if typeof(text) == "string" and text ~= "" then
+						local trimmed = text:gsub("^%s+", ""):gsub("%s+$", "")
+						if trimmed == LocalPlayer.Name
+							or trimmed == LocalPlayer.DisplayName
+							or trimmed == tostring(LocalPlayer.UserId)
+							or originalLabelText[obj] ~= nil then
+
+							if originalLabelText[obj] == nil then
+								originalLabelText[obj] = text
+							end
+
+							local original = originalLabelText[obj]
+							if original == LocalPlayer.Name or original == LocalPlayer.DisplayName then
+								if customDisplayName ~= "" then
+									obj.Text = customDisplayName
+								end
+							elseif original == tostring(LocalPlayer.UserId) then
+								if customSecondLine ~= "" then
+									obj.Text = customSecondLine
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+		local function resetNameChanger()
+			customDisplayName = ""
+			customSecondLine = ""
+
+			local character = getCharacter()
+			if character then
+				local humanoid = character:FindFirstChildOfClass("Humanoid")
+				if humanoid then
+					pcall(function()
+						humanoid.DisplayName = LocalPlayer.DisplayName
+					end)
+				end
+			end
+
+			for obj, original in pairs(originalLabelText) do
+				if obj and obj.Parent then
+					obj.Text = original
+				end
+			end
+
+			table.clear(originalLabelText)
+		end
+
+		local NameDisplayBox = create("TextBox", {
+			Name = "NameDisplayBox",
+			BackgroundColor3 = PANEL2,
+			TextColor3 = WHITE,
+			PlaceholderText = "New display name",
+			PlaceholderColor3 = MUTED,
+			Text = "",
+			TextSize = 13,
+			Font = Enum.Font.GothamMedium,
+			ClearTextOnFocus = false,
+			Size = UDim2.new(1, -10, 0, 42),
+			Position = UDim2.fromOffset(0, 0),
+		}, NameChangerPage)
+		corner(NameDisplayBox, 9)
+		stroke(NameDisplayBox, BORDER, 1, 0.3)
+		NameDisplayBox.LayoutOrder = #NameChangerPage:GetChildren() + 1
+
+		local NameSecondLineBox = create("TextBox", {
+			Name = "NameSecondLineBox",
+			BackgroundColor3 = PANEL2,
+			TextColor3 = WHITE,
+			PlaceholderText = "New username / ID line",
+			PlaceholderColor3 = MUTED,
+			Text = "",
+			TextSize = 13,
+			Font = Enum.Font.GothamMedium,
+			ClearTextOnFocus = false,
+			Size = UDim2.new(1, -10, 0, 42),
+			Position = UDim2.fromOffset(0, 0),
+		}, NameChangerPage)
+		corner(NameSecondLineBox, 9)
+		stroke(NameSecondLineBox, BORDER, 1, 0.3)
+		NameSecondLineBox.LayoutOrder = #NameChangerPage:GetChildren() + 1
+
+		pageButton(NameChangerPage, "Apply Name", function()
+			customDisplayName = (NameDisplayBox.Text or ""):gsub("^%s+", ""):gsub("%s+$", "")
+			customSecondLine = (NameSecondLineBox.Text or ""):gsub("^%s+", ""):gsub("%s+$", "")
+			applyNameChanger()
+		end)
+
+		pageButton(NameChangerPage, "Reset Name", function()
+			resetNameChanger()
+			NameDisplayBox.Text = ""
+			NameSecondLineBox.Text = ""
+		end)
+
+		label(
+			NameChangerPage,
+			"Changes are local to your client.",
+			UDim2.new(1, -10, 0, 28),
+			UDim2.fromOffset(0, 0),
+			11
+		).TextColor3 = MUTED
+
+		LocalPlayer.CharacterAdded:Connect(function()
+			task.wait(0.5)
+			if customDisplayName ~= "" or customSecondLine ~= "" then
+				applyNameChanger()
+			end
+		end)
+	end
 
 	--============================================================
 	-- CHAT PAGE
@@ -5075,6 +5265,7 @@ end
 		"Auto Farm",
 		"Nitty AUTO FARM",
 		"Chat",
+		"Name Changer",
 	}
 
 	function createSidebarButton(name, index)
@@ -5087,13 +5278,10 @@ end
 			Font = Enum.Font.GothamMedium,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			AutoButtonColor = false,
-			Size = UDim2.new(1, -20, 0, 36),
-			Position = UDim2.fromOffset(
-				10,
-				48 + ((index - 1) * 40)
-			),
+			Size = UDim2.new(1, 0, 0, 36),
+			LayoutOrder = index,
 			ZIndex = 16,
-		}, Sidebar)
+		}, SidebarList)
 
 		corner(b, 9)
 
