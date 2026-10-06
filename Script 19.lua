@@ -1028,6 +1028,66 @@
 	end
 
 	--============================================================
+	-- GUI RESIZE HANDLE
+	-- Drag the bottom-right corner with the mouse to make the GUI
+	-- smaller/larger. The whole GUI scales together, including
+	-- the contents, so it stays usable on smaller screens.
+	--============================================================
+	local ResizeHandle = Instance.new("TextButton")
+	ResizeHandle.Name = "ResizeHandle"
+	ResizeHandle.Text = ""
+	ResizeHandle.AutoButtonColor = false
+	ResizeHandle.BackgroundTransparency = 1
+	ResizeHandle.Size = UDim2.fromOffset(22, 22)
+	ResizeHandle.AnchorPoint = Vector2.new(1, 1)
+	ResizeHandle.Position = UDim2.fromScale(1, 1)
+	ResizeHandle.ZIndex = 100
+	ResizeHandle.Parent = MainFrame
+
+	local ResizeLine1 = Instance.new("Frame")
+	ResizeLine1.BorderSizePixel = 0
+	ResizeLine1.BackgroundColor3 = BLUE
+	ResizeLine1.BackgroundTransparency = 0.15
+	ResizeLine1.Size = UDim2.fromOffset(10, 2)
+	ResizeLine1.AnchorPoint = Vector2.new(1, 1)
+	ResizeLine1.Position = UDim2.new(1, -2, 1, -5)
+	ResizeLine1.Rotation = -45
+	ResizeLine1.ZIndex = 101
+	ResizeLine1.Parent = ResizeHandle
+
+	local ResizeLine2 = ResizeLine1:Clone()
+	ResizeLine2.Size = UDim2.fromOffset(7, 2)
+	ResizeLine2.Position = UDim2.new(1, -2, 1, -10)
+	ResizeLine2.Parent = ResizeHandle
+
+	local resizing = false
+	local resizeStart
+	local startSize
+	local MIN_WIDTH, MIN_HEIGHT = 520, 360
+
+	ResizeHandle.InputBegan:Connect(function(input)
+		if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+		resizing = true
+		resizeStart = input.Position
+		startSize = MainFrame.Size
+	end)
+
+	UserInputService.InputChanged:Connect(function(input)
+		if not resizing or input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+		local delta = input.Position - resizeStart
+		local newW = math.max(MIN_WIDTH, startSize.X.Offset + delta.X)
+		local newH = math.max(MIN_HEIGHT, startSize.Y.Offset + delta.Y)
+		MainFrame.Size = UDim2.fromOffset(newW, newH)
+		MainFrame.Position = UDim2.new(0.5, -newW / 2, 0.5, -newH / 2)
+	end)
+
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			resizing = false
+		end
+	end)
+
+	--============================================================
 	-- TOP BAR
 	--============================================================
 
