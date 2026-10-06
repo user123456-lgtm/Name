@@ -129,7 +129,7 @@
 			["18200"] = true,
 			["mossco764"] = true,
 			["123456"] = true,
-			["rocco67"] = true,
+			["parrsky"] = true,
 			["KW21745AN"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
@@ -281,7 +281,7 @@
 	["1234"] = 3471832372,
 		["mossco764"] = 10431395322,
 		["123456"] = 10419666492,
-		["rocco67"] = 10627525898,
+		["parrsky"] = 7672217129,
 		["KW21745AN"] = 437097363,
 	}
 
@@ -2088,27 +2088,6 @@
 		end
 	)
 
-	pageButton(
-		PlayerPage,
-		"Teleport to Spawn",
-		function()
-			if not RootPart then
-				return
-			end
-
-			local spawnLocation =
-				workspace:FindFirstChildWhichIsA(
-					"SpawnLocation",
-					true
-				)
-
-			if spawnLocation then
-				RootPart.CFrame =
-					spawnLocation.CFrame +
-					Vector3.new(0, 4, 0)
-			end
-		end
-	)
 
 	InfiniteJumpButton = pageButton(
 		PlayerPage,
@@ -2189,6 +2168,9 @@
 
 	DOCKS_POSITION = Vector3.new(949, 41, -2367)
 	HOUSE_TOP_FLOOR_POSITION = Vector3.new(271, 133, 2090)
+	KNIFE_CRATE_POSITION = Vector3.new(1469, 3, -419)
+	MAIN_POSITION = Vector3.new(-617, 3, -299)
+	GROW_YARD_POSITION = Vector3.new(287, 71, 1622)
 
 	pageButton(TeleportPage, "Docks", function()
 		teleportToCoordinates(DOCKS_POSITION, "Docks")
@@ -2198,9 +2180,21 @@
 		teleportToCoordinates(HOUSE_TOP_FLOOR_POSITION, "House - Top Floor")
 	end)
 
+	pageButton(TeleportPage, "Knife crate", function()
+		teleportToCoordinates(KNIFE_CRATE_POSITION, "Knife crate")
+	end)
+
+	pageButton(TeleportPage, "Main", function()
+		teleportToCoordinates(MAIN_POSITION, "Main")
+	end)
+
+	pageButton(TeleportPage, "Grow yard", function()
+		teleportToCoordinates(GROW_YARD_POSITION, "Grow yard")
+	end)
+
 	TeleportInfo = label(
 		TeleportPage,
-		"Docks: 949, 41, -2367\nHouse - Top Floor: 271, 133, 2090",
+		"Docks: 949, 41, -2367\nHouse - Top Floor: 271, 133, 2090\nKnife crate: 1469, 3, -419\nMain: -617, 3, -299\nGrow yard: 287, 71, 1622",
 		UDim2.new(1, -10, 0, 60),
 		UDim2.fromOffset(0, 0),
 		12
@@ -2211,6 +2205,68 @@
 	--============================================================
 	-- COMBAT / AIM
 	--============================================================
+
+	-- EQUIP ALL KNIVES
+	-- Added directly to the existing Combat tab.
+	local EquipAllKnivesBusy = false
+
+	local function equipAllKnives()
+		local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+		local backpack = LocalPlayer:FindFirstChildOfClass("Backpack")
+
+		if not backpack then
+			return 0
+		end
+
+		local found = 0
+
+		-- Preserve the supplied script's behavior: equip every Tool
+		-- currently in the Backpack.
+		for _, item in ipairs(backpack:GetChildren()) do
+			if item:IsA("Tool") then
+				item.Parent = character
+				found += 1
+				task.wait(0.03)
+			end
+		end
+
+		for _, item in ipairs(character:GetChildren()) do
+			if item:IsA("Tool") then
+				found += 1
+			end
+		end
+
+		return found
+	end
+
+	EquipAllKnivesButton = pageButton(
+		CombatPage,
+		"EQUIP ALL KNIVES",
+		function()
+			if EquipAllKnivesBusy then
+				return
+			end
+
+			EquipAllKnivesBusy = true
+			EquipAllKnivesButton.Text = "EQUIPPING..."
+
+			task.spawn(function()
+				local found = equipAllKnives()
+
+				task.wait(0.5)
+
+				if EquipAllKnivesButton and EquipAllKnivesButton.Parent then
+					if found == 0 then
+						EquipAllKnivesButton.Text = "EQUIP ALL KNIVES"
+					else
+						EquipAllKnivesButton.Text = "EQUIP ALL KNIVES"
+					end
+					EquipAllKnivesBusy = false
+				end
+			end)
+		end
+	)
+
 
 	TargetLabel = label(
 		CombatPage,
@@ -4041,14 +4097,6 @@ end
 
 	pageButton(
 		CarsPage,
-		"Teleport to Spawned Bike",
-		function()
-			teleportToSpawnedBike()
-		end
-	)
-
-	pageButton(
-		CarsPage,
 		"Find Nearest Vehicle",
 		function()
 			if not RootPart then
@@ -4082,20 +4130,6 @@ end
 						seat.CFrame +
 						Vector3.new(0, 3, 0)
 				end
-			end
-		end
-	)
-
-	pageButton(
-		CarsPage,
-		"Teleport to Green Drop-Off",
-		function()
-			local dropOff = findGreenDropOff()
-
-			if dropOff and RootPart then
-				RootPart.CFrame =
-					dropOff.CFrame +
-					Vector3.new(0, 5, 0)
 			end
 		end
 	)
@@ -4895,25 +4929,21 @@ end
 			local distance = (targetRoot.Position - root.Position).Magnitude
 			NittyTarget.Text = string.format("Target: %s • %.0f studs", target.Name, distance)
 
-			if distance <= ATTACK_DISTANCE then
-				stopMovement()
-				if attackTarget(target) then
-					NittyStatus.Text = "Status: Attacked " .. target.Name
-				end
-				if targetHumanoid.Health <= 0 then target = nil end
-				return
-			end
+			-- Direct Nitty teleport: when the Nitty is detected, move directly
+			-- to its current position. If no Nitty is found, the code above
+			-- returns without moving the player anywhere.
+			stopMovement()
+			root.AssemblyLinearVelocity = Vector3.zero
+			root.AssemblyAngularVelocity = Vector3.zero
+			root.CFrame = CFrame.new(targetRoot.Position + Vector3.new(0, 3, 0))
+			root.AssemblyLinearVelocity = Vector3.zero
+			root.AssemblyAngularVelocity = Vector3.zero
+			NittyStatus.Text = "Status: Teleported to " .. target.Name
 
-			NittyStatus.Text = (flightEnabled and "Status: Flying to " or "Status: Travelling to ") .. target.Name
-			if flightEnabled then
-				if now - lastPath >= 0.05 then
-					lastPath = now
-					flyToTarget(target)
-				end
-			elseif now - lastPath >= REPATH_INTERVAL and not moving then
-				lastPath = now
-				task.spawn(moveToTarget, target)
+			if attackTarget(target) then
+				NittyStatus.Text = "Status: Attacked " .. target.Name
 			end
+			if targetHumanoid.Health <= 0 then target = nil end
 		end)
 	end
 
