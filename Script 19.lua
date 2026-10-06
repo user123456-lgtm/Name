@@ -130,6 +130,7 @@
 			["mossco764"] = true,
 			["123456"] = true,
 			["parrsky"] = true,
+			["mordecaii13"] = true,
 			["KW21745AN"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
@@ -282,6 +283,7 @@
 		["mossco764"] = 10431395322,
 		["123456"] = 10419666492,
 		["parrsky"] = 7672217129,
+		["mordecaii13"] = 5288323564,
 		["KW21745AN"] = 437097363,
 	}
 
