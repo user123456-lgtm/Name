@@ -229,6 +229,7 @@ else
 			["18200"] = true,
 			["mossco764"] = true,
 			["123456"] = true,
+			["KW21745AN"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
 			["OCEANA-002-KEY"] = true,
