@@ -1,176 +1,3 @@
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
---============================================================
--- OCEANA ONE-ACCOUNT-PER-KEY SERVER AUTH
---============================================================
--- This same source can be placed in BOTH:
---   1) ServerScriptService (server auth branch)
---   2) StarterPlayer > StarterPlayerScripts (client GUI branch)
--- Replace each 0 below with the Roblox UserId that owns that key.
--- A UserId can only own one key in this table.
-
-if RunService:IsServer() then
-	local KEY_OWNERS = {
-		["Carson19235"] = 9489777743,
-		["AXZDADS1923"] = 8336401677,
-		["SDAWRS8123"] = 10910089999,
-		["KLSDWT3245"] = 11135058989,
-		["Mzino"] = 10980967466,
-		["SOTV"] = 7335573976,
-		["ILOVEMYDOG"] = 11412462635,
-	["kcfrmdacv"] = 5374860987,
-	["1234"] = 3471832372,
-		["ndsuifhbviuohswbiuoh"] = 1517326987,
-		["18200"] = 1709678602,
-		["mossco764"] = 10431395322,
-		["123456"] = 10419666492,
-		["KW21745AN"] = 437097363,
-		["OCEANA-001-KEY"] = 0,
-		["OCEANA-002-KEY"] = 0,
-		["OCEANA-003-KEY"] = 0,
-		["OCEANA-004-KEY"] = 0,
-		["OCEANA-005-KEY"] = 0,
-		["OCEANA-006-KEY"] = 0,
-		["OCEANA-007-KEY"] = 0,
-		["OCEANA-008-KEY"] = 0,
-		["OCEANA-009-KEY"] = 0,
-		["OCEANA-010-KEY"] = 0,
-		["OCEANA-011-KEY"] = 0,
-		["OCEANA-012-KEY"] = 0,
-		["OCEANA-013-KEY"] = 0,
-		["OCEANA-014-KEY"] = 0,
-		["OCEANA-015-KEY"] = 0,
-		["OCEANA-016-KEY"] = 0,
-		["OCEANA-017-KEY"] = 0,
-		["OCEANA-018-KEY"] = 0,
-		["OCEANA-019-KEY"] = 0,
-		["OCEANA-020-KEY"] = 0,
-		["OCEANA-021-KEY"] = 0,
-		["OCEANA-022-KEY"] = 0,
-		["OCEANA-023-KEY"] = 0,
-		["OCEANA-024-KEY"] = 0,
-		["OCEANA-025-KEY"] = 0,
-		["OCEANA-026-KEY"] = 0,
-		["OCEANA-027-KEY"] = 0,
-		["OCEANA-028-KEY"] = 0,
-		["OCEANA-029-KEY"] = 0,
-		["OCEANA-030-KEY"] = 0,
-		["OCEANA-031-KEY"] = 0,
-		["OCEANA-032-KEY"] = 0,
-		["OCEANA-033-KEY"] = 0,
-		["OCEANA-034-KEY"] = 0,
-		["OCEANA-035-KEY"] = 0,
-		["OCEANA-036-KEY"] = 0,
-		["OCEANA-037-KEY"] = 0,
-		["OCEANA-038-KEY"] = 0,
-		["OCEANA-039-KEY"] = 0,
-		["OCEANA-040-KEY"] = 0,
-		["OCEANA-041-KEY"] = 0,
-		["OCEANA-042-KEY"] = 0,
-		["OCEANA-043-KEY"] = 0,
-		["OCEANA-044-KEY"] = 0,
-		["OCEANA-045-KEY"] = 0,
-		["OCEANA-046-KEY"] = 0,
-		["OCEANA-047-KEY"] = 0,
-		["OCEANA-048-KEY"] = 0,
-		["OCEANA-049-KEY"] = 0,
-		["OCEANA-050-KEY"] = 0,
-		["OCEANA-051-KEY"] = 0,
-		["OCEANA-052-KEY"] = 0,
-		["OCEANA-053-KEY"] = 0,
-		["OCEANA-054-KEY"] = 0,
-		["OCEANA-055-KEY"] = 0,
-		["OCEANA-056-KEY"] = 0,
-		["OCEANA-057-KEY"] = 0,
-		["OCEANA-058-KEY"] = 0,
-		["OCEANA-059-KEY"] = 0,
-		["OCEANA-060-KEY"] = 0,
-		["OCEANA-061-KEY"] = 0,
-		["OCEANA-062-KEY"] = 0,
-		["OCEANA-063-KEY"] = 0,
-		["OCEANA-064-KEY"] = 0,
-		["OCEANA-065-KEY"] = 0,
-		["OCEANA-066-KEY"] = 0,
-		["OCEANA-067-KEY"] = 0,
-		["OCEANA-068-KEY"] = 0,
-		["OCEANA-069-KEY"] = 0,
-		["OCEANA-070-KEY"] = 0,
-		["OCEANA-071-KEY"] = 0,
-		["OCEANA-072-KEY"] = 0,
-		["OCEANA-073-KEY"] = 0,
-		["OCEANA-074-KEY"] = 0,
-		["OCEANA-075-KEY"] = 0,
-		["OCEANA-076-KEY"] = 0,
-		["OCEANA-077-KEY"] = 0,
-		["OCEANA-078-KEY"] = 0,
-		["OCEANA-079-KEY"] = 0,
-		["OCEANA-080-KEY"] = 0,
-		["OCEANA-081-KEY"] = 0,
-		["OCEANA-082-KEY"] = 0,
-		["OCEANA-083-KEY"] = 0,
-		["OCEANA-084-KEY"] = 0,
-		["OCEANA-085-KEY"] = 0,
-		["OCEANA-086-KEY"] = 0,
-		["OCEANA-087-KEY"] = 0,
-		["OCEANA-088-KEY"] = 0,
-		["OCEANA-089-KEY"] = 0,
-		["OCEANA-090-KEY"] = 0,
-		["OCEANA-091-KEY"] = 0,
-		["OCEANA-092-KEY"] = 0,
-		["OCEANA-093-KEY"] = 0,
-		["OCEANA-094-KEY"] = 0,
-		["OCEANA-095-KEY"] = 0,
-		["OCEANA-096-KEY"] = 0,
-		["OCEANA-097-KEY"] = 0,
-		["OCEANA-098-KEY"] = 0,
-		["OCEANA-099-KEY"] = 0,
-		["OCEANA-100-KEY"] = 0,
-	}
-
-	local seenOwners = {}
-	for key, userId in pairs(KEY_OWNERS) do
-		if type(userId) == "number" and userId > 0 then
-			if seenOwners[userId] then
-				warn("[OCEANA] Duplicate UserId assigned to " .. tostring(seenOwners[userId]) .. " and " .. key)
-			else
-				seenOwners[userId] = key
-			end
-		end
-	end
-
-	local authRemote = ReplicatedStorage:FindFirstChild("OCEANA_KeyAuth")
-	if authRemote and not authRemote:IsA("RemoteFunction") then
-		authRemote:Destroy()
-		authRemote = nil
-	end
-
-	if not authRemote then
-		authRemote = Instance.new("RemoteFunction")
-		authRemote.Name = "OCEANA_KeyAuth"
-		authRemote.Parent = ReplicatedStorage
-	end
-
-	authRemote.OnServerInvoke = function(player, enteredKey)
-		if type(enteredKey) ~= "string" then
-			return false, "INVALID ACCESS KEY"
-		end
-
-		local ownerUserId = KEY_OWNERS[enteredKey]
-		if type(ownerUserId) ~= "number" or ownerUserId <= 0 then
-			return false, "KEY NOT CONFIGURED"
-		end
-
-		if player.UserId ~= ownerUserId then
-			return false, "KEY NOT ASSIGNED TO THIS ACCOUNT"
-		end
-
-		return true, "ACCESS GRANTED"
-	end
-
-	print("[OCEANA] One-account-per-key server authentication loaded")
-else
 	-- OCEANA GUI + DARK ADMIN / TESTING UTILITY
 	--
 	-- Place in:
@@ -188,9 +15,12 @@ else
 	-- • Inventory Viewer
 	-- • Player Spectate
 	--============================================================
+-- Script 12 functionality is integrated into this OCEANA GUI build.
+-- The 1-Tap system remains intentionally removed.
+--============================================================
 
-	local Players = game:GetService("Players")
-	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	Players = game:GetService("Players")
+	ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 	--============================================================
 	-- MAX MAP RENDER / STREAMING DISTANCE
@@ -201,20 +31,90 @@ else
 	pcall(function()
 		workspace.StreamingMinRadius = 1000000
 	end)
-	local RunService = game:GetService("RunService")
-	local UserInputService = game:GetService("UserInputService")
-	local CollectionService = game:GetService("CollectionService")
-	local ProximityPromptService = game:GetService("ProximityPromptService")
-	local TweenService = game:GetService("TweenService")
+	RunService = game:GetService("RunService")
+	UserInputService = game:GetService("UserInputService")
+	CollectionService = game:GetService("CollectionService")
+	ProximityPromptService = game:GetService("ProximityPromptService")
+	TweenService = game:GetService("TweenService")
 
-	local LocalPlayer = Players.LocalPlayer
-	local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+	LocalPlayer = Players.LocalPlayer
+	PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+	--============================================================
+	-- GUI STARTUP WATCHDOG
+	--============================================================
+	-- Creates a recovery panel if an earlier runtime error prevents
+	-- the main OCEANA interface from being constructed.
+	task.spawn(function()
+		task.wait(3)
+		if PlayerGui:FindFirstChild("OCEANA Script") then
+			return
+		end
+
+		local recovery = Instance.new("ScreenGui")
+		recovery.Name = "OCEANA Startup Recovery"
+		recovery.ResetOnSpawn = false
+		recovery.IgnoreGuiInset = true
+		recovery.DisplayOrder = 9999
+		recovery.Parent = PlayerGui
+
+		local frame = Instance.new("Frame")
+		frame.Size = UDim2.fromOffset(420, 190)
+		frame.Position = UDim2.new(0.5, -210, 0.5, -95)
+		frame.BackgroundColor3 = Color3.fromRGB(7, 10, 18)
+		frame.Parent = recovery
+
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0, 16)
+		corner.Parent = frame
+
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = Color3.fromRGB(70, 150, 255)
+		stroke.Thickness = 2
+		stroke.Parent = frame
+
+		local title = Instance.new("TextLabel")
+		title.BackgroundTransparency = 1
+		title.Size = UDim2.new(1, -30, 0, 35)
+		title.Position = UDim2.fromOffset(15, 18)
+		title.Text = "OCEANA STARTUP ERROR"
+		title.TextColor3 = Color3.fromRGB(245, 247, 255)
+		title.Font = Enum.Font.GothamBold
+		title.TextSize = 18
+		title.Parent = frame
+
+		local info = Instance.new("TextLabel")
+		info.BackgroundTransparency = 1
+		info.Size = UDim2.new(1, -30, 0, 70)
+		info.Position = UDim2.fromOffset(15, 58)
+		info.Text = "The main interface failed before it could initialize.\nCheck the Roblox Developer Console (F9) for the OCEANA error."
+		info.TextColor3 = Color3.fromRGB(160, 170, 190)
+		info.Font = Enum.Font.Gotham
+		info.TextSize = 12
+		info.TextWrapped = true
+		info.Parent = frame
+
+		local close = Instance.new("TextButton")
+		close.Size = UDim2.fromOffset(130, 34)
+		close.Position = UDim2.new(0.5, -65, 1, -48)
+		close.BackgroundColor3 = Color3.fromRGB(70, 150, 255)
+		close.Text = "CLOSE"
+		close.TextColor3 = Color3.new(1,1,1)
+		close.Font = Enum.Font.GothamBold
+		close.TextSize = 12
+		close.Parent = frame
+
+		local cc = Instance.new("UICorner")
+		cc.CornerRadius = UDim.new(0, 9)
+		cc.Parent = close
+		close.MouseButton1Click:Connect(function() recovery:Destroy() end)
+	end)
 
 	--============================================================
 	-- CONFIG
 	--============================================================
 
-	local Config = {
+	Config = {
 		ACCESS_KEYS = {
 			["Carson19235"] = true,
 			["AXZDADS1923"] = true,
@@ -229,6 +129,7 @@ else
 			["18200"] = true,
 			["mossco764"] = true,
 			["123456"] = true,
+			["rocco67"] = true,
 			["KW21745AN"] = true,
 			["DSTAOT8421"] = true,
 			["OCEANA-001-KEY"] = true,
@@ -366,7 +267,7 @@ else
 
 	-- One-account-per-key mapping used when this script is running client-only.
 	-- Server authentication is still preferred when OCEANA_KeyAuth exists.
-	local CLIENT_KEY_OWNERS = {
+	CLIENT_KEY_OWNERS = {
 		["ndsuifhbviuohswbiuoh"] = 1517326987,
 		["18200"] = 1709678602,
 		["Carson19235"] = 9489777743,
@@ -380,6 +281,7 @@ else
 	["1234"] = 3471832372,
 		["mossco764"] = 10431395322,
 		["123456"] = 10419666492,
+		["rocco67"] = 10627525898,
 		["KW21745AN"] = 437097363,
 	}
 
@@ -387,26 +289,27 @@ else
 	-- STATE
 	--============================================================
 
-	local Character
-	local Humanoid
-	local RootPart
+	Character = nil
+	Humanoid = nil
+	RootPart = nil
 
-	local Flying = false
-	local Noclip = false
-	local AutoGrab = false
-	local SkeletonESPEnabled = false
-	local NormalESPEnabled = false
-	local DistanceESPEnabled = false
-	local HealthESPEnabled = false
-	local AimAssist = false
-	local AimHolding = false
+	Flying = false
+	Noclip = false
+	AutoGrab = false
+	SkeletonESPEnabled = false
+	NormalESPEnabled = false
+	DistanceESPEnabled = false
+	HealthESPEnabled = false
+	AimAssist = false
+	AimHolding = false
+	InfiniteJumpEnabled = false
 
-	local CurrentTarget = nil
-	local AimTarget = nil
-	local SilentAimEnabled = false
-	local SharedWhitelist = {}
+	CurrentTarget = nil
+	AimTarget = nil
+	SilentAimEnabled = false
+	SharedWhitelist = {}
 
-	local function isWhitelistedTarget(player)
+	function isWhitelistedTarget(player)
 		if not player then
 			return false
 		end
@@ -420,68 +323,68 @@ else
 			or SharedWhitelist[displayName] == true
 	end
 
-	local FlyBV = nil
-	local FlyBG = nil
+	FlyBV = nil
+	FlyBG = nil
 
-	local MenuVisible = true
-	local Minimized = false
+	MenuVisible = true
+	Minimized = false
 
-	local ESPObjects = {}
+	ESPObjects = {}
 
 
-	local CurrentBike = nil
-	local UsedBikes = {}
+	CurrentBike = nil
+	UsedBikes = {}
 
-	local AutoFarmRunning = false
+	AutoFarmRunning = false
 
-	local SOURCE_A_POSITION = Vector3.new(0, 0, 0)
-	local DELIVERY_ZONE_POSITION = nil
+	SOURCE_A_POSITION = Vector3.new(0, 0, 0)
+	DELIVERY_ZONE_POSITION = nil
 
 	--============================================================
 	-- GUI REFERENCES
 	--============================================================
 
-	local GUI
-	local MainFrame
-	local MainContent
-	local Sidebar
+	GUI = nil
+	MainFrame = nil
+	MainContent = nil
+	Sidebar = nil
 
-	local KeyFrame
-	local KeyBox
-	local KeyStatus
+	KeyFrame = nil
+	KeyBox = nil
+	KeyStatus = nil
 
-	local StatusText
-	local BikeText
-	local AutoFarmButton
+	StatusText = nil
+	BikeText = nil
+	AutoFarmButton = nil
 
-	local Pages = {}
-	local sidebarButtons = {}
+	Pages = {}
+	sidebarButtons = {}
 
 	--============================================================
 	-- CARSON COLORS
 	--============================================================
 
-	local BG = Color3.fromRGB(6, 7, 12)
-	local PANEL = Color3.fromRGB(11, 13, 21)
-	local PANEL2 = Color3.fromRGB(17, 20, 31)
-	local PANEL3 = Color3.fromRGB(22, 26, 40)
+	BG = Color3.fromRGB(4, 6, 11)
+	PANEL = Color3.fromRGB(8, 12, 21)
+	PANEL2 = Color3.fromRGB(13, 19, 32)
+	PANEL3 = Color3.fromRGB(21, 32, 52)
 
-	local WHITE = Color3.fromRGB(245, 247, 255)
-	local MUTED = Color3.fromRGB(145, 151, 170)
+	WHITE = Color3.fromRGB(245, 247, 255)
+	MUTED = Color3.fromRGB(145, 151, 170)
 
-	local BLUE = Color3.fromRGB(75, 145, 255)
-	local BLUE2 = Color3.fromRGB(105, 175, 255)
+	BLUE = Color3.fromRGB(70, 150, 255)
+	BLUE2 = Color3.fromRGB(130, 195, 255)
 
-	local GREEN = Color3.fromRGB(75, 230, 135)
-	local RED = Color3.fromRGB(255, 75, 95)
+	GREEN = Color3.fromRGB(75, 230, 135)
+	RED = Color3.fromRGB(255, 75, 95)
 
-	local BORDER = Color3.fromRGB(40, 47, 68)
+	BORDER = Color3.fromRGB(46, 67, 98)
 
 	--============================================================
 	-- CHARACTER
 	--============================================================
 
-	local function applyWalkSpeed()
+	function applyWalkSpeed()
 		if not Humanoid or not Humanoid.Parent then
 			return
 		end
@@ -493,7 +396,7 @@ else
 		end
 	end
 
-	local function applyJumpPower()
+	function applyJumpPower()
 		if not Humanoid or not Humanoid.Parent then
 			return
 		end
@@ -502,7 +405,7 @@ else
 		Humanoid.JumpPower = Config.JUMP_POWER
 	end
 
-	local function setupCharacter(character)
+	function setupCharacter(character)
 		Character = character
 
 		Humanoid = character:WaitForChild("Humanoid", 10)
@@ -539,6 +442,20 @@ else
 	end)
 
 	--============================================================
+	-- INFINITE JUMP
+	--============================================================
+
+	UserInputService.JumpRequest:Connect(function()
+		if not InfiniteJumpEnabled then
+			return
+		end
+
+		if Humanoid and Humanoid.Parent then
+			Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+		end
+	end)
+
+	--============================================================
 	-- PERSISTENT WALK SPEED
 	--============================================================
 
@@ -563,7 +480,7 @@ else
 	-- GUI HELPERS
 	--============================================================
 
-	local function create(className, properties, parent)
+	function create(className, properties, parent)
 		local object = Instance.new(className)
 
 		for property, value in pairs(properties or {}) do
@@ -575,14 +492,14 @@ else
 		return object
 	end
 
-	local function corner(object, radius)
+	function corner(object, radius)
 		local c = Instance.new("UICorner")
 		c.CornerRadius = UDim.new(0, radius or 8)
 		c.Parent = object
 		return c
 	end
 
-	local function stroke(object, color, thickness, transparency)
+	function stroke(object, color, thickness, transparency)
 		local s = Instance.new("UIStroke")
 		s.Color = color or BORDER
 		s.Thickness = thickness or 1
@@ -591,7 +508,7 @@ else
 		return s
 	end
 
-	local function label(parent, text, size, position, fontSize)
+	function label(parent, text, size, position, fontSize)
 		return create("TextLabel", {
 			BackgroundTransparency = 1,
 			Text = text,
@@ -605,7 +522,7 @@ else
 		}, parent)
 	end
 
-	local function makeDraggable(frame, handle)
+	function makeDraggable(frame, handle)
 		local dragging = false
 		local dragStart
 		local startPosition
@@ -646,9 +563,10 @@ else
 		end)
 	end
 
-	local function button(parent, text, position, size)
+	function button(parent, text, position, size)
 		local b = create("TextButton", {
 			BackgroundColor3 = PANEL2,
+			BackgroundTransparency = 0.06,
 			Text = text,
 			TextColor3 = WHITE,
 			TextSize = 13,
@@ -715,7 +633,7 @@ else
 	-- SCREEN GUI
 	--============================================================
 
-	local oldGui = PlayerGui:FindFirstChild("OCEANA Script")
+	oldGui = PlayerGui:FindFirstChild("OCEANA Script")
 
 	if oldGui then
 		oldGui:Destroy()
@@ -728,12 +646,15 @@ else
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		DisplayOrder = 50,
 	}, PlayerGui)
+	GUI.Enabled = true
+	GUI.ResetOnSpawn = false
+	GUI.IgnoreGuiInset = true
 
 	--============================================================
 	-- KEY SCREEN
 	--============================================================
 
-	local KeyGlow = create("Frame", {
+	KeyGlow = create("Frame", {
 		Name = "KeyGlow",
 		BackgroundColor3 = BLUE,
 		BackgroundTransparency = 0.94,
@@ -755,7 +676,7 @@ else
 	corner(KeyFrame, 18)
 	stroke(KeyFrame, BLUE, 1, 0.35)
 
-	local KeyAccent = create("Frame", {
+	KeyAccent = create("Frame", {
 		BackgroundColor3 = BLUE,
 		Size = UDim2.new(1, -28, 0, 3),
 		Position = UDim2.fromOffset(14, 0),
@@ -764,7 +685,7 @@ else
 
 	corner(KeyAccent, 3)
 
-	local KeyLogo = create("Frame", {
+	KeyLogo = create("Frame", {
 		BackgroundColor3 = BLUE,
 		Size = UDim2.fromOffset(48, 48),
 		Position = UDim2.fromOffset(25, 26),
@@ -773,7 +694,7 @@ else
 
 	corner(KeyLogo, 13)
 
-	local KeyLogoText = label(
+	KeyLogoText = label(
 		KeyLogo,
 		"C",
 		UDim2.fromScale(1, 1),
@@ -784,7 +705,7 @@ else
 	KeyLogoText.TextXAlignment = Enum.TextXAlignment.Center
 	KeyLogoText.Font = Enum.Font.GothamBlack
 
-	local KeyTitle = label(
+	KeyTitle = label(
 		KeyFrame,
 		"OCEANA",
 		UDim2.new(1, -100, 0, 26),
@@ -794,7 +715,7 @@ else
 
 	KeyTitle.Font = Enum.Font.GothamBlack
 
-	local KeySubtitle = label(
+	KeySubtitle = label(
 		KeyFrame,
 		"SECURE ACCESS",
 		UDim2.new(1, -100, 0, 18),
@@ -805,7 +726,7 @@ else
 	KeySubtitle.TextColor3 = BLUE2
 	KeySubtitle.Font = Enum.Font.GothamBold
 
-	local KeyInfo = label(
+	KeyInfo = label(
 		KeyFrame,
 		"Enter your access key to continue.",
 		UDim2.new(1, -50, 0, 22),
@@ -815,7 +736,7 @@ else
 
 	KeyInfo.TextColor3 = MUTED
 
-	local KeyInfo2 = label(
+	KeyInfo2 = label(
 		KeyFrame,
 		"Authentication is required before opening the dashboard.",
 		UDim2.new(1, -50, 0, 18),
@@ -842,7 +763,7 @@ else
 
 	corner(KeyBox, 11)
 
-	local KeyBoxStroke = stroke(KeyBox, BORDER, 1, 0.15)
+	KeyBoxStroke = stroke(KeyBox, BORDER, 1, 0.15)
 
 	KeyBox.Focused:Connect(function()
 		TweenService:Create(
@@ -882,7 +803,7 @@ else
 		):Play()
 	end)
 
-	local UnlockButton = create("TextButton", {
+	UnlockButton = create("TextButton", {
 		Name = "UnlockButton",
 		BackgroundColor3 = BLUE,
 		Text = "UNLOCK  →",
@@ -921,7 +842,7 @@ else
 	-- DISCORD BUTTON
 	--============================================================
 
-	local DiscordButton = create("TextButton", {
+	DiscordButton = create("TextButton", {
 		Name = "DiscordButton",
 		BackgroundColor3 = PANEL2,
 		Text = "JOIN DISCORD  →",
@@ -953,7 +874,7 @@ else
 	-- DISCORD INFORMATION POPUP
 	--============================================================
 
-	local DiscordPopup = create("Frame", {
+	DiscordPopup = create("Frame", {
 		Name = "DiscordPopup",
 		BackgroundColor3 = BG,
 		Size = UDim2.fromOffset(390, 225),
@@ -965,7 +886,7 @@ else
 	corner(DiscordPopup, 16)
 	stroke(DiscordPopup, BLUE, 1, 0.25)
 
-	local DiscordTitle = label(
+	DiscordTitle = label(
 		DiscordPopup,
 		"OCEANA DISCORD",
 		UDim2.new(1, -50, 0, 30),
@@ -976,7 +897,7 @@ else
 	DiscordTitle.Font = Enum.Font.GothamBlack
 	DiscordTitle.ZIndex = 31
 
-	local DiscordInfo = label(
+	DiscordInfo = label(
 		DiscordPopup,
 		"Join the OCEANA Discord for updates, announcements and community information.\n\nThank you for using OCEANA",
 		UDim2.new(1, -50, 0, 85),
@@ -987,7 +908,7 @@ else
 	DiscordInfo.TextWrapped = true
 	DiscordInfo.ZIndex = 31
 
-	local DiscordJoin = create("TextButton", {
+	DiscordJoin = create("TextButton", {
 		Name = "DiscordJoin",
 		BackgroundColor3 = BLUE,
 		Text = "OPEN DISCORD  →",
@@ -1002,7 +923,7 @@ else
 
 	corner(DiscordJoin, 9)
 
-	local DiscordClose = create("TextButton", {
+	DiscordClose = create("TextButton", {
 		Name = "DiscordClose",
 		BackgroundColor3 = PANEL2,
 		Text = "CLOSE",
@@ -1057,21 +978,52 @@ else
 	MainFrame = create("Frame", {
 		Name = "MainFrame",
 		BackgroundColor3 = BG,
-		Size = UDim2.fromOffset(780, 510),
-		Position = UDim2.new(0.5, -390, 0.5, -255),
+		Size = UDim2.fromOffset(940, 620),
+		Position = UDim2.new(0.5, -470, 0.5, -310),
 		Visible = false,
 		ZIndex = 10,
 	}, GUI)
 
 	corner(MainFrame, 18)
-	stroke(MainFrame, BLUE, 1, 0.45)
+	stroke(MainFrame, BLUE, 1, 0.25)
+
+	MainGradient = Instance.new("UIGradient")
+	MainGradient.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(7, 13, 24)),
+		ColorSequenceKeypoint.new(0.55, Color3.fromRGB(5, 8, 15)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 17, 30)),
+	})
+	MainGradient.Rotation = 25
+	MainGradient.Parent = MainFrame
+
+	MainGlow = create("Frame", {
+		Name = "AmbientGlow",
+		BackgroundColor3 = BLUE,
+		BackgroundTransparency = 0.94,
+		Size = UDim2.new(1, -30, 0, 5),
+		Position = UDim2.fromOffset(15, 65),
+		ZIndex = 13,
+	}, MainFrame)
+	corner(MainGlow, 4)
+
+	task.spawn(function()
+		while GUI and GUI.Parent do
+			local a = TweenService:Create(MainGlow, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.82})
+			a:Play()
+			a.Completed:Wait()
+			if not (GUI and GUI.Parent) then break end
+			local b = TweenService:Create(MainGlow, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.96})
+			b:Play()
+			b.Completed:Wait()
+		end
+	end)
 
 	-- Mobile only: scale the existing GUI down so it fits phone screens.
 	-- PC layout is completely unchanged.
 	if UserInputService.TouchEnabled and not UserInputService.MouseEnabled then
 		local MobileScale = Instance.new("UIScale")
 		MobileScale.Name = "MobileGUIScale"
-		MobileScale.Scale = 0.72
+		MobileScale.Scale = 0.56
 		MobileScale.Parent = MainFrame
 	end
 
@@ -1079,16 +1031,16 @@ else
 	-- TOP BAR
 	--============================================================
 
-	local TopBar = create("Frame", {
+	TopBar = create("Frame", {
 		Name = "TopBar",
 		BackgroundColor3 = PANEL,
-		Size = UDim2.new(1, 0, 0, 58),
+		Size = UDim2.new(1, 0, 0, 66),
 		ZIndex = 12,
 	}, MainFrame)
 
 	corner(TopBar, 18)
 
-	local TopAccent = create("Frame", {
+	TopAccent = create("Frame", {
 		BackgroundColor3 = BLUE,
 		Size = UDim2.new(1, -28, 0, 3),
 		Position = UDim2.fromOffset(14, 0),
@@ -1097,16 +1049,16 @@ else
 
 	corner(TopAccent, 3)
 
-	local Logo = create("Frame", {
+	Logo = create("Frame", {
 		BackgroundColor3 = BLUE,
-		Size = UDim2.fromOffset(36, 36),
-		Position = UDim2.fromOffset(13, 12),
+		Size = UDim2.fromOffset(38, 38),
+		Position = UDim2.fromOffset(14, 15),
 		ZIndex = 15,
 	}, TopBar)
 
 	corner(Logo, 10)
 
-	local LogoText = label(
+	LogoText = label(
 		Logo,
 		"C",
 		UDim2.fromScale(1, 1),
@@ -1117,28 +1069,73 @@ else
 	LogoText.TextXAlignment = Enum.TextXAlignment.Center
 	LogoText.Font = Enum.Font.GothamBlack
 
-	local Title = label(
+	Title = label(
 		TopBar,
 		"OCEANA SCRIPT",
 		UDim2.new(1, -180, 0, 24),
-		UDim2.fromOffset(60, 8),
+		UDim2.fromOffset(64, 10),
 		16
 	)
 
 	Title.Font = Enum.Font.GothamBlack
 
-	local SubTitle = label(
+	SubTitle = label(
 		TopBar,
-		"ADMIN • TESTING UTILITY",
+		"OCEANA  •  NEXT-GEN UTILITY",
 		UDim2.new(1, -180, 0, 17),
-		UDim2.fromOffset(61, 31),
+		UDim2.fromOffset(65, 34),
 		9
 	)
 
 	SubTitle.TextColor3 = BLUE2
 	SubTitle.Font = Enum.Font.GothamBold
 
-	local Minimize = create("TextButton", {
+	StatusPill = create("Frame", {
+		Name = "StatusPill",
+		BackgroundColor3 = Color3.fromRGB(8, 22, 34),
+		BackgroundTransparency = 0.05,
+		Size = UDim2.fromOffset(104, 26),
+		Position = UDim2.new(1, -188, 0, 18),
+		ZIndex = 16,
+	}, TopBar)
+
+	corner(StatusPill, 13)
+	stroke(StatusPill, BLUE, 1, 0.35)
+
+	StatusDot = create("Frame", {
+		Name = "StatusDot",
+		BackgroundColor3 = Color3.fromRGB(80, 220, 140),
+		Size = UDim2.fromOffset(7, 7),
+		Position = UDim2.fromOffset(11, 10),
+		ZIndex = 17,
+	}, StatusPill)
+
+	corner(StatusDot, 7)
+
+	StatusLabel = label(
+		StatusPill,
+		"ONLINE  •  READY",
+		UDim2.new(1, -27, 1, 0),
+		UDim2.fromOffset(24, 0),
+		8
+	)
+	StatusLabel.TextColor3 = Color3.fromRGB(150, 220, 255)
+	StatusLabel.Font = Enum.Font.GothamBold
+	StatusLabel.TextYAlignment = Enum.TextYAlignment.Center
+
+	task.spawn(function()
+		while GUI and GUI.Parent and StatusDot.Parent do
+			local fade = TweenService:Create(StatusDot, TweenInfo.new(0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.65})
+			fade:Play()
+			fade.Completed:Wait()
+			if not (GUI and GUI.Parent and StatusDot.Parent) then break end
+			local glow = TweenService:Create(StatusDot, TweenInfo.new(0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0})
+			glow:Play()
+			glow.Completed:Wait()
+		end
+	end)
+
+	Minimize = create("TextButton", {
 		BackgroundColor3 = PANEL2,
 		Text = "—",
 		TextColor3 = MUTED,
@@ -1146,14 +1143,14 @@ else
 		Font = Enum.Font.GothamBold,
 		AutoButtonColor = false,
 		Size = UDim2.fromOffset(32, 32),
-		Position = UDim2.new(1, -77, 0, 13),
+		Position = UDim2.new(1, -77, 0, 17),
 		ZIndex = 16,
 	}, TopBar)
 
 	corner(Minimize, 9)
 	stroke(Minimize, BORDER, 1, 0.3)
 
-	local CloseButton = create("TextButton", {
+	CloseButton = create("TextButton", {
 		BackgroundColor3 = PANEL2,
 		Text = "×",
 		TextColor3 = RED,
@@ -1161,7 +1158,7 @@ else
 		Font = Enum.Font.GothamBold,
 		AutoButtonColor = false,
 		Size = UDim2.fromOffset(32, 32),
-		Position = UDim2.new(1, -39, 0, 13),
+		Position = UDim2.new(1, -39, 0, 17),
 		ZIndex = 16,
 	}, TopBar)
 
@@ -1175,15 +1172,15 @@ else
 	Sidebar = create("Frame", {
 		Name = "Sidebar",
 		BackgroundColor3 = PANEL,
-		Size = UDim2.fromOffset(178, 444),
-		Position = UDim2.fromOffset(0, 58),
+		Size = UDim2.fromOffset(208, 552),
+		Position = UDim2.fromOffset(0, 66),
 		ZIndex = 12,
 	}, MainFrame)
 
 	corner(Sidebar, 13)
 	stroke(Sidebar, BORDER, 1, 0.5)
 
-	local SidebarTitle = label(
+	SidebarTitle = label(
 		Sidebar,
 		"NAVIGATION",
 		UDim2.new(1, -28, 0, 25),
@@ -1194,7 +1191,7 @@ else
 	SidebarTitle.TextColor3 = MUTED
 	SidebarTitle.Font = Enum.Font.GothamBold
 
-	local SidebarList = create("ScrollingFrame", {
+	SidebarList = create("ScrollingFrame", {
 		Name = "SidebarList",
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
@@ -1224,8 +1221,8 @@ else
 	MainContent = create("Frame", {
 		Name = "MainContent",
 		BackgroundTransparency = 1,
-		Size = UDim2.new(1, -200, 1, -78),
-		Position = UDim2.fromOffset(192, 68),
+		Size = UDim2.new(1, -230, 1, -88),
+		Position = UDim2.fromOffset(222, 78),
 		ZIndex = 12,
 	}, MainFrame)
 
@@ -1233,7 +1230,143 @@ else
 	-- PAGES
 	--============================================================
 
-	local function createPage(name)
+	function addVisualTabBackground(page, variant)
+		-- Procedural animated OCEANA background. It stays behind every control,
+		-- so buttons, sliders and pill switches remain crisp and readable.
+		local bg = create("Frame", {
+			Name = "VisualBackground",
+			BackgroundColor3 = Color3.fromRGB(3, 10, 24),
+			BackgroundTransparency = 0.08,
+			BorderSizePixel = 0,
+			Size = UDim2.fromScale(1, 1),
+			Position = UDim2.fromScale(0, 0),
+			ZIndex = 11,
+		}, MainContent)
+		corner(bg, 16)
+
+		local gradient = Instance.new("UIGradient")
+		gradient.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(3, 12, 30)),
+			ColorSequenceKeypoint.new(0.45, Color3.fromRGB(5, 23, 55)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(2, 8, 22)),
+		})
+		gradient.Rotation = 18
+		gradient.Parent = bg
+
+		local glow = create("Frame", {
+			Name = "MovingGlow",
+			BackgroundColor3 = BLUE,
+			BackgroundTransparency = 0.90,
+			BorderSizePixel = 0,
+			Size = UDim2.fromOffset(280, 280),
+			Position = UDim2.new(-0.12, 0, 0.08, 0),
+			ZIndex = 2,
+		}, bg)
+		corner(glow, 140)
+
+		local glow2 = create("Frame", {
+			Name = "MovingGlow2",
+			BackgroundColor3 = BLUE2,
+			BackgroundTransparency = 0.94,
+			BorderSizePixel = 0,
+			Size = UDim2.fromOffset(220, 220),
+			Position = UDim2.new(0.70, 0, 0.52, 0),
+			ZIndex = 2,
+		}, bg)
+		corner(glow2, 110)
+
+		-- Distant skyline silhouette.
+		local skyline = create("Frame", {
+			Name = "Skyline",
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 0, 105),
+			Position = UDim2.new(0, 0, 1, -105),
+			ZIndex = 2,
+		}, bg)
+		local heights = {42, 68, 35, 86, 55, 74, 48, 92, 58, 40, 78, 51, 70, 45, 88}
+		for i, h in ipairs(heights) do
+			local building = create("Frame", {
+				BackgroundColor3 = Color3.fromRGB(4, 18, 42),
+				BackgroundTransparency = 0.08,
+				BorderSizePixel = 0,
+				Size = UDim2.new(1 / #heights, -3, 0, h),
+				Position = UDim2.new((i - 1) / #heights, 1, 1, -h),
+				ZIndex = 2,
+			}, skyline)
+			corner(building, 3)
+			for w = 1, 2 do
+				local win = create("Frame", {
+					BackgroundColor3 = BLUE2,
+					BackgroundTransparency = 0.45,
+					BorderSizePixel = 0,
+					Size = UDim2.fromOffset(3, 3),
+					Position = UDim2.new(0.25 + (w - 1) * 0.45, 0, 0.25 + ((i * 13 + w * 7) % 45) / 100, 0),
+					ZIndex = 3,
+				}, building)
+				corner(win, 1)
+			end
+		end
+
+		local moon = create("Frame", {
+			Name = "Moon",
+			BackgroundColor3 = Color3.fromRGB(115, 205, 255),
+			BackgroundTransparency = 0.18,
+			BorderSizePixel = 0,
+			Size = UDim2.fromOffset(44, 44),
+			Position = UDim2.new(0.70, 0, 0.08, 0),
+			ZIndex = 2,
+		}, bg)
+		corner(moon, 22)
+		stroke(moon, BLUE, 1, 0.45)
+
+		local waveHolder = create("Frame", {
+			Name = "MovingWaves",
+			BackgroundTransparency = 1,
+			ClipsDescendants = true,
+			Size = UDim2.new(1, 0, 0, 90),
+			Position = UDim2.new(0, 0, 1, -90),
+			ZIndex = 4,
+		}, bg)
+		for i = 1, 7 do
+			local wave = create("Frame", {
+				BackgroundColor3 = i % 2 == 0 and BLUE or BLUE2,
+				BackgroundTransparency = 0.90,
+				BorderSizePixel = 0,
+				Size = UDim2.new(1.25, 0, 0, 2),
+				Position = UDim2.new(-0.12, 0, 0, i * 12),
+				Rotation = i % 2 == 0 and -2 or 2,
+				ZIndex = 4,
+			}, waveHolder)
+			corner(wave, 2)
+			local from = wave.Position
+			local to = UDim2.new(0.04, 0, from.Y.Scale, from.Y.Offset)
+			task.spawn(function()
+				while wave.Parent do
+					local a = TweenService:Create(wave, TweenInfo.new(3.2 + i * 0.22, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = to})
+					a:Play(); a.Completed:Wait()
+					if not wave.Parent then break end
+					local b = TweenService:Create(wave, TweenInfo.new(3.2 + i * 0.22, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = from})
+					b:Play(); b.Completed:Wait()
+				end
+			end)
+		end
+
+		-- Slow parallax movement makes each page feel alive.
+		task.spawn(function()
+			local t = 0
+			while page.Parent do
+				t = t + 0.018
+				glow.Position = UDim2.new(-0.12 + math.sin(t) * 0.16, 0, 0.08 + math.cos(t * 0.7) * 0.08, 0)
+				glow2.Position = UDim2.new(0.70 + math.cos(t * 0.8) * 0.12, 0, 0.52 + math.sin(t * 0.65) * 0.10, 0)
+				gradient.Rotation = 18 + math.sin(t * 0.35) * 16
+				task.wait()
+			end
+		end)
+
+		return bg
+	end
+
+	function createPage(name)
 		local page = create("ScrollingFrame", {
 			Name = name,
 			BackgroundTransparency = 1,
@@ -1262,7 +1395,7 @@ else
 		return page
 	end
 
-	local function pageTitle(page, text)
+	function pageTitle(page, text)
 		local title = label(
 			page,
 			text,
@@ -1272,12 +1405,13 @@ else
 		)
 
 		title.Font = Enum.Font.GothamBlack
+		title.ZIndex = 16
 		title.LayoutOrder = 1
 
 		return title
 	end
 
-	local function pageButton(page, text, callback)
+	function pageButton(page, text, callback)
 		local b = button(
 			page,
 			text,
@@ -1285,6 +1419,7 @@ else
 			UDim2.new(1, -10, 0, 42)
 		)
 
+		b.ZIndex = 16
 		b.LayoutOrder = #page:GetChildren() + 1
 
 		-- ON/OFF controls use a compact pill switch. The ON color is
@@ -1346,7 +1481,7 @@ else
 	end
 
 	-- Reusable draggable slider for the Player page. Supports mouse and touch.
-	local function pageSlider(page, titleText, minValue, maxValue, initialValue, callback)
+	function pageSlider(page, titleText, minValue, maxValue, initialValue, callback)
 		local row = create("Frame", {
 			Name = titleText:gsub("%W", "") .. "Slider",
 			BackgroundColor3 = PANEL2,
@@ -1402,29 +1537,67 @@ else
 		return row
 	end
 
-	local InfoPage = createPage("Information")
-	local PlayerPage = createPage("Player")
-	local CombatPage = createPage("Combat")
-	local VisualPage = createPage("Visuals")
-	local UtilityPage = createPage("Utility")
-	local CarsPage = createPage("Cars")
-	local PlayersPage = createPage("Players")
-	local AutoFarmPage = createPage("Auto Farm")
-	local NittyAutoFarmPage = createPage("Nitty AUTO FARM")
-	local ChatPage = createPage("Chat")
-	local NameChangerPage = createPage("Name Changer")
+	InfoPage = createPage("Information")
+	PlayerPage = createPage("Player")
+	TeleportPage = createPage("Teleport")
+	CombatPage = createPage("Combat")
+	VisualPage = createPage("Visuals")
+	CarsPage = createPage("Cars")
+	PlayersPage = createPage("Players")
+	AutoFarmPage = createPage("Auto Farm")
+	NittyAutoFarmPage = createPage("Nitty AUTO FARM")
+	ChatPage = createPage("Chat")
+	NameChangerPage = createPage("Name Changer")
+	SettingsPage = createPage("Settings")
+
+	-- One animated visual layer sits behind all tab pages.
+	-- Keeping it outside the ScrollingFrames prevents it from entering
+	-- their UIListLayouts and pushing all page controls off-screen.
+	addVisualTabBackground(MainContent)
 
 	pageTitle(InfoPage, "Information")
 	pageTitle(PlayerPage, "Player")
+	pageTitle(TeleportPage, "Teleport")
 	pageTitle(CombatPage, "Combat")
 	pageTitle(VisualPage, "Visuals")
-	pageTitle(UtilityPage, "Utility")
 	pageTitle(CarsPage, "Cars")
 	pageTitle(PlayersPage, "Players")
 	pageTitle(AutoFarmPage, "Auto Farm")
 	pageTitle(NittyAutoFarmPage, "Nitty AUTO FARM")
 	pageTitle(ChatPage, "Chat")
 	pageTitle(NameChangerPage, "Name Changer")
+	pageTitle(SettingsPage, "Settings")
+
+	-- Keep all existing controls visibly above the animated artwork.
+	for _, page in pairs(Pages) do
+		for _, obj in ipairs(page:GetDescendants()) do
+			if obj:IsA("GuiButton") or obj:IsA("TextLabel") or obj:IsA("TextBox") or obj:IsA("Frame") then
+				if not (page:FindFirstChild("VisualBackground") and obj:IsDescendantOf(page.VisualBackground)) then
+					obj.ZIndex = math.max(obj.ZIndex, 20)
+				end
+			end
+		end
+	end
+
+	local SettingsInfo = label(
+		SettingsPage,
+		"Interface settings",
+		UDim2.new(1, -10, 0, 28),
+		UDim2.fromOffset(0, 0),
+		11
+	)
+	SettingsInfo.TextColor3 = MUTED
+	SettingsInfo.LayoutOrder = 2
+
+	local StatusDisplayButton
+	StatusDisplayButton = pageButton(SettingsPage, "Status Display: ON", function()
+		local enabled = string.match(StatusDisplayButton.Text, ":%s*(%a+)$") == "ON"
+		StatusDisplayButton.Text = "Status Display: " .. (enabled and "OFF" or "ON")
+		if StatusPill then
+			StatusPill.Visible = not enabled
+		end
+	end)
+	StatusDisplayButton.LayoutOrder = 3
 
 	--============================================================
 	-- NAME CHANGER
@@ -1688,7 +1861,7 @@ else
 	-- INFORMATION
 	--============================================================
 
-	local info = label(
+	info = label(
 		InfoPage,
 		"Thank you for using OCEANA",
 		UDim2.new(1, -10, 0, 220),
@@ -1702,11 +1875,6 @@ else
 	--============================================================
 	-- PLAYER PAGE
 	--============================================================
-
-	local WalkToggleButton
-	local FlyButton
-	local NoclipButton
-	local PickupButton
 
 	pageSlider(PlayerPage, "Walk Speed", 16, 32, Config.WALK_SPEED, function(value)
 		Config.WALK_SPEED = value
@@ -1736,11 +1904,32 @@ else
 		end
 	)
 
+	InfiniteStaminaButton = pageButton(
+		PlayerPage,
+		"Infinite Stamina: OFF",
+		function()
+			local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+			local staminaValue = character:FindFirstChild("StaminaValue")
+			if not staminaValue then
+				return
+			end
+
+			local enabled = InfiniteStaminaButton.Text == "Infinite Stamina: ON"
+			if enabled then
+				staminaValue.Value = 100
+				InfiniteStaminaButton.Text = "Infinite Stamina: OFF"
+			else
+				staminaValue.Value = math.huge
+				InfiniteStaminaButton.Text = "Infinite Stamina: ON"
+			end
+		end
+	)
+
 	--============================================================
 	-- FLY
 	--============================================================
 
-	local function startFly()
+	function startFly()
 		if Flying then
 			return
 		end
@@ -1770,7 +1959,7 @@ else
 		FlyBG.Parent = RootPart
 	end
 
-	local function stopFly()
+	function stopFly()
 		Flying = false
 
 		if FlyBV then
@@ -1857,6 +2046,16 @@ else
 		end
 	)
 
+	InfiniteJumpButton = pageButton(
+		PlayerPage,
+		"Infinite Jump: OFF",
+		function()
+			InfiniteJumpEnabled = not InfiniteJumpEnabled
+			InfiniteJumpButton.Text = "Infinite Jump: " .. (InfiniteJumpEnabled and "ON" or "OFF")
+			InfiniteJumpButton.TextColor3 = InfiniteJumpEnabled and GREEN or WHITE
+		end
+	)
+
 	pageButton(
 		PlayerPage,
 		"Reset Character",
@@ -1868,89 +2067,88 @@ else
 	)
 
 	--============================================================
-	-- UTILITY / GRAB
+	-- TELEPORT
 	--============================================================
 
-	pageButton(
-		UtilityPage,
-		"Grab Range: 30",
-		function()
-			if Config.GRAB_RANGE == 10 then
-				Config.GRAB_RANGE = 20
-			elseif Config.GRAB_RANGE == 20 then
-				Config.GRAB_RANGE = 30
-			elseif Config.GRAB_RANGE == 30 then
-				Config.GRAB_RANGE = 50
-			elseif Config.GRAB_RANGE == 50 then
-				Config.GRAB_RANGE = 75
-			elseif Config.GRAB_RANGE == 75 then
-				Config.GRAB_RANGE = 100
-			else
-				Config.GRAB_RANGE = 10
-			end
+	TeleportStatus = label(
+		TeleportPage,
+		"Status: Ready",
+		UDim2.new(1, -10, 0, 30),
+		UDim2.fromOffset(0, 0),
+		13
+	)
+	TeleportStatus.TextColor3 = MUTED
 
-			for _, child in ipairs(UtilityPage:GetChildren()) do
-				if child:IsA("TextButton")
-					and string.find(child.Text, "Grab Range:", 1, true) then
+	function teleportToCoordinates(position, labelText)
+		local character = LocalPlayer.Character
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 
-					child.Text =
-						"Grab Range: " .. Config.GRAB_RANGE
+		if not character or not root then
+			TeleportStatus.Text = "Status: Character not ready"
+			TeleportStatus.TextColor3 = RED
+			return
+		end
 
-					break
+		local destination = CFrame.new(position)
+
+		-- If the player is sitting on a bike/vehicle, move the VEHICLE model
+		-- instead of only moving the character. This keeps the seat weld intact
+		-- and prevents the bike from being left behind or thrown out of sync.
+		local seat = humanoid and humanoid.SeatPart
+		local vehicle = nil
+
+		if seat and (seat:IsA("VehicleSeat") or seat:IsA("Seat")) then
+			vehicle = seat:FindFirstAncestorOfClass("Model")
+		end
+
+		if vehicle and vehicle ~= character then
+			vehicle:PivotTo(destination)
+
+			-- Stop leftover vehicle physics immediately after the teleport.
+			for _, obj in ipairs(vehicle:GetDescendants()) do
+				if obj:IsA("BasePart") then
+					obj.AssemblyLinearVelocity = Vector3.zero
+					obj.AssemblyAngularVelocity = Vector3.zero
 				end
 			end
+		else
+			-- On foot: move the whole character directly.
+			character:PivotTo(destination)
+			root.AssemblyLinearVelocity = Vector3.zero
+			root.AssemblyAngularVelocity = Vector3.zero
 		end
+
+		TeleportStatus.Text = "Status: Teleported to " .. labelText
+		TeleportStatus.TextColor3 = GREEN
+	end
+
+	DOCKS_POSITION = Vector3.new(949, 41, -2367)
+	HOUSE_TOP_FLOOR_POSITION = Vector3.new(271, 133, 2090)
+
+	pageButton(TeleportPage, "Docks", function()
+		teleportToCoordinates(DOCKS_POSITION, "Docks")
+	end)
+
+	pageButton(TeleportPage, "House - Top Floor", function()
+		teleportToCoordinates(HOUSE_TOP_FLOOR_POSITION, "House - Top Floor")
+	end)
+
+	TeleportInfo = label(
+		TeleportPage,
+		"Docks: 949, 41, -2367\nHouse - Top Floor: 271, 133, 2090",
+		UDim2.new(1, -10, 0, 60),
+		UDim2.fromOffset(0, 0),
+		12
 	)
-
-	pageButton(
-		UtilityPage,
-		"Auto Grab: OFF",
-		function()
-			AutoGrab = not AutoGrab
-
-			for _, child in ipairs(UtilityPage:GetChildren()) do
-				if child:IsA("TextButton")
-					and string.find(child.Text, "Auto Grab:", 1, true) then
-
-					child.Text =
-						"Auto Grab: " ..
-						(AutoGrab and "ON" or "OFF")
-
-					break
-				end
-			end
-		end
-	)
-
-	pageButton(
-		UtilityPage,
-		"Teleport to Spawn",
-		function()
-			if not RootPart then
-				return
-			end
-
-			local spawn =
-				workspace:FindFirstChildWhichIsA(
-					"SpawnLocation",
-					true
-				)
-
-			if spawn then
-				RootPart.CFrame =
-					spawn.CFrame +
-					Vector3.new(0, 4, 0)
-			end
-		end
-	)
+	TeleportInfo.TextWrapped = true
+	TeleportInfo.TextColor3 = MUTED
 
 	--============================================================
 	-- COMBAT / AIM
 	--============================================================
 
-	local AimButton
-
-	local TargetLabel = label(
+	TargetLabel = label(
 		CombatPage,
 		"Target: None",
 		UDim2.new(1, -10, 0, 30),
@@ -2059,8 +2257,6 @@ else
 		end
 	)
 
-	local SilentAimButton
-
 	SilentAimButton = pageButton(
 		CombatPage,
 		"Silent Aim: OFF",
@@ -2076,7 +2272,7 @@ else
 		end
 	)
 
-	local SilentAimInfo = label(
+	SilentAimInfo = label(
 		CombatPage,
 		"Silent Aim does not move the camera. It exposes the selected target part to your own weapon code. Players on the Utility whitelist are ignored.",
 		UDim2.new(1, -10, 0, 68),
@@ -2152,19 +2348,14 @@ else
 	-- VISUALS / PLAYER ESP
 	--============================================================
 
-	local SkeletonESPButton
-	local NormalESPButton
-	local DistanceESPButton
-	local HealthESPButton
-
-	local function hasPlayerESPEnabled()
+	function hasPlayerESPEnabled()
 		return SkeletonESPEnabled
 			or NormalESPEnabled
 			or DistanceESPEnabled
 			or HealthESPEnabled
 	end
 
-	local function removeESP(player)
+	function removeESP(player)
 		if player then
 			local obj = ESPObjects[player]
 
@@ -2204,7 +2395,7 @@ else
 		end
 	end
 
-	local function createSkeleton(character, root)
+	function createSkeleton(character, root)
 		local attachments = {}
 		local beams = {}
 		local attachmentCache = {}
@@ -2278,7 +2469,7 @@ else
 		return attachments, beams
 	end
 
-	local function addESP(player)
+	function addESP(player)
 		if player == LocalPlayer then
 			return
 		end
@@ -2374,7 +2565,7 @@ else
 		}
 	end
 
-	local function refreshESP()
+	function refreshESP()
 		removeESP()
 
 		if not hasPlayerESPEnabled() then
@@ -2451,17 +2642,17 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	
 	
 	
-	local ESPEnabled = false
-	local ContentsEnabled = false
+	ESPEnabled = false
+	ContentsEnabled = false
 	
-	local CurrentCases = {}
-	local CaseConnections = {}
+	CurrentCases = {}
+	CaseConnections = {}
 	
 	--==================================================
 	-- SETTINGS
 	--==================================================
 	
-	local NAME_MATCHES = {
+	NAME_MATCHES = {
 	    "briefcase",
 	    "suitcase",
 	    "brief case",
@@ -2472,7 +2663,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- CHECK NAME
 	--==================================================
 	
-	local function IsBriefcaseName(name)
+	function IsBriefcaseName(name)
 	    local lower = string.lower(name)
 	
 	    for _, wanted in ipairs(NAME_MATCHES) do
@@ -2488,7 +2679,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- GET ROOT MODEL
 	--==================================================
 	
-	local function GetRootModel(obj)
+	function GetRootModel(obj)
 	    if obj:IsA("Model") then
 	        return obj
 	    end
@@ -2506,20 +2697,20 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- BRIEFCASE CACHE (LOW-LAG)
 	--==================================================
 	
-	local KnownCases = {}
-	local CachedContents = {}
+	KnownCases = {}
+	CachedContents = {}
 	
-	local function AddKnownCase(case)
+	function AddKnownCase(case)
 	    if case and case.Parent then
 	        KnownCases[case] = true
 	    end
 	end
 	
-	local function RemoveKnownCase(case)
+	function RemoveKnownCase(case)
 	    KnownCases[case] = nil
 	end
 	
-	local function GetKnownCases()
+	function GetKnownCases()
 	    local result = {}
 	
 	    for case in pairs(KnownCases) do
@@ -2537,7 +2728,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- GET TOOL NAMES ONLY
 	--==================================================
 	
-	local function GetActualToolName(tool)
+	function GetActualToolName(tool)
 	    -- Use the game's real display/item name when it provides one.
 	    local attributes = {
 	        "DisplayName",
@@ -2567,7 +2758,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	    return tool.Name
 	end
 	
-	local function GetPickupObjectName(prompt)
+	function GetPickupObjectName(prompt)
 	    -- Handles pickup items that are represented by a Model/BasePart + ProximityPrompt.
 	    -- Many items display their real name in a BillboardGui/TextLabel rather than
 	    -- using the Roblox Instance name, so check those labels too.
@@ -2635,7 +2826,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	    return model.Name
 	end
 	
-	local function GetContents(case, forceRefresh)
+	function GetContents(case, forceRefresh)
 	    if not forceRefresh and CachedContents[case] then
 	        return CachedContents[case]
 	    end
@@ -2673,7 +2864,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- REMOVE ONE ESP
 	--==================================================
 	
-	local function RemoveCaseESP(case)
+	function RemoveCaseESP(case)
 	    if not case then
 	        return
 	    end
@@ -2707,7 +2898,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- ADD ESP
 	--==================================================
 	
-	local function AddCaseESP(case)
+	function AddCaseESP(case)
 	    if not case or not case.Parent or not ESPEnabled then
 	        return
 	    end
@@ -2802,7 +2993,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- REMOVE ALL ESP
 	--==================================================
 	
-	local function RemoveAllESP()
+	function RemoveAllESP()
 	    for _, case in ipairs(CurrentCases) do
 	        RemoveCaseESP(case)
 	    end
@@ -2814,7 +3005,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- UPDATE ESP (CACHED / LOW-LAG)
 	--==================================================
 	
-	local function UpdateESP()
+	function UpdateESP()
 	    if not ESPEnabled then
 	        RemoveAllESP()
 	        return
@@ -2851,9 +3042,9 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	-- EVENT-DRIVEN DETECTION (NO REPEATED WORKSPACE SCANS)
 	--==================================================
 	
-	local refreshQueued = false
+	refreshQueued = false
 	
-	local function QueueESPRefresh()
+	function QueueESPRefresh()
 	    if refreshQueued then
 	        return
 	    end
@@ -2906,10 +3097,10 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	--==================================================
 	-- Records every real Tool name found inside detected briefcases.
 	
-	local FoundBriefcaseItems = {}
-	local SeenBriefcaseItems = {}
+	FoundBriefcaseItems = {}
+	SeenBriefcaseItems = {}
 	
-	local function RecordBriefcaseItemName(name)
+	function RecordBriefcaseItemName(name)
 	    if not name or name == "" then
 	        return
 	    end
@@ -2925,7 +3116,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	    print("[BRIEFCASE ITEM FOUND] " .. name)
 	end
 	
-	local function RecordBriefcaseTool(tool)
+	function RecordBriefcaseTool(tool)
 	    if not tool or not tool:IsA("Tool") then
 	        return
 	    end
@@ -2933,7 +3124,7 @@ local BriefcaseIntegrationOK, BriefcaseIntegrationError = pcall(function()
 	    RecordBriefcaseItemName(GetActualToolName(tool))
 	end
 	
-	local function ScanBriefcaseForAllItems(case)
+	function ScanBriefcaseForAllItems(case)
 	    if not case then
 	        return
 	    end
@@ -3081,7 +3272,7 @@ end
 	-- VEHICLE HELPERS
 	--============================================================
 
-	local function findBikeSeat(bike)
+	function findBikeSeat(bike)
 		if not bike or not bike:IsA("Model") then
 			return nil
 		end
@@ -3101,7 +3292,7 @@ end
 		return nil
 	end
 
-	local function findCutLockPrompt(bike)
+	function findCutLockPrompt(bike)
 		if not bike then
 			return nil
 		end
@@ -3127,7 +3318,7 @@ end
 		return nil
 	end
 
-	local function findDeliveryBikePrompt(bike)
+	function findDeliveryBikePrompt(bike)
 		if not bike then
 			return nil
 		end
@@ -3159,7 +3350,7 @@ end
 		return nil
 	end
 
-	local function activatePrompt(prompt)
+	function activatePrompt(prompt)
 		if not prompt or not prompt.Enabled then
 			return false
 		end
@@ -3181,7 +3372,7 @@ end
 		return ok
 	end
 
-	local function isDeliveryBike(obj)
+	function isDeliveryBike(obj)
 		if not obj
 			or not obj:IsA("Model")
 			or obj == Character then
@@ -3204,7 +3395,7 @@ end
 	-- DROP-OFF
 	--============================================================
 
-	local function findGreenDropOff()
+	function findGreenDropOff()
 		local best
 		local bestScore = math.huge
 
@@ -3248,7 +3439,7 @@ end
 		return best
 	end
 
-	local function findDeliveryZone()
+	function findDeliveryZone()
 		if DELIVERY_ZONE_POSITION then
 			return DELIVERY_ZONE_POSITION
 		end
@@ -3266,7 +3457,7 @@ end
 	-- FIND BIKES
 	--============================================================
 
-	local function findSpawnedBike()
+	function findSpawnedBike()
 		local closestBike
 		local closestDistance = math.huge
 
@@ -3293,7 +3484,7 @@ end
 		return closestBike
 	end
 
-	local function getNextBike()
+	function getNextBike()
 		if CurrentBike then
 			return nil
 		end
@@ -3349,7 +3540,7 @@ end
 	-- TELEPORT TO SPAWNED BIKE
 	--============================================================
 
-	local function teleportToSpawnedBike()
+	function teleportToSpawnedBike()
 		if not RootPart then
 			return
 		end
@@ -3387,7 +3578,7 @@ end
 	-- TELEPORT TO DELIVERY BIKE
 	--============================================================
 
-	local function teleportToDeliveryBike(bike)
+	function teleportToDeliveryBike(bike)
 		if not bike
 			or bike ~= CurrentBike
 			or not bike.Parent then
@@ -3453,7 +3644,7 @@ end
 	-- MOVE EXACT BIKE
 	--============================================================
 
-	local function setBikeNoclip(bike, enabled, states)
+	function setBikeNoclip(bike, enabled, states)
 		if not bike or not bike.Parent then
 			return
 		end
@@ -3476,7 +3667,7 @@ end
 		end
 	end
 
-	local function moveBikeToDeliveryZone(bike, destination)
+	function moveBikeToDeliveryZone(bike, destination)
 		if not bike
 			or bike ~= CurrentBike
 			or not bike.Parent then
@@ -3620,7 +3811,7 @@ end
 	-- DRIVE BIKE
 	--============================================================
 
-	local function driveBike(bike)
+	function driveBike(bike)
 		if not bike
 			or bike ~= CurrentBike then
 
@@ -3655,7 +3846,7 @@ end
 	-- RUN ONE DELIVERY
 	--============================================================
 
-	local function runDelivery()
+	function runDelivery()
 		if CurrentBike then
 			return false
 		end
@@ -3724,7 +3915,7 @@ end
 	-- AUTO FARM
 	--============================================================
 
-	local function runAutoFarm()
+	function runAutoFarm()
 		if AutoFarmRunning then
 			return
 		end
@@ -3763,7 +3954,7 @@ end
 		end)
 	end
 
-	local function stopAutoFarm()
+	function stopAutoFarm()
 		Config.AUTO_FARM = false
 		AutoFarmRunning = false
 		CurrentBike = nil
@@ -3904,7 +4095,7 @@ end
 
 	pageTitle(AutoFarmPage, "Auto Farm")
 
-	local AutoFarmStateText = label(
+	AutoFarmStateText = label(
 		AutoFarmPage,
 		"Auto Farm: OFF  |  Fly: OFF  |  Noclip: OFF  |  Nitty Speed: 1X  |  Nitty Fly: OFF  |  Nitty Noclip: OFF",
 		UDim2.new(1, -10, 0, 52),
@@ -3915,7 +4106,7 @@ end
 	AutoFarmStateText.LayoutOrder = 2
 	AutoFarmStateText.TextColor3 = MUTED
 
-	local function updateAutoFarmStateText(autoFarmOn, flyOn, noclipOn, nittySpeed, nittyFlyOn, nittyNoclipOn)
+	function updateAutoFarmStateText(autoFarmOn, flyOn, noclipOn, nittySpeed, nittyFlyOn, nittyNoclipOn)
 		AutoFarmStateText.Text =
 			"Auto Farm: " .. (autoFarmOn and "ON" or "OFF") ..
 			"  |  Fly: " .. (flyOn and "ON" or "OFF") ..
@@ -3991,7 +4182,7 @@ end
 		end
 	)
 
-	local AirInfo = label(
+	AirInfo = label(
 		AutoFarmPage,
 		"Delivery route:\n\n" ..
 		"1. Find one unused delivery bike\n" ..
@@ -4672,12 +4863,12 @@ end
 	-- PLAYER SELECTION / SPECTATE / INVENTORY
 	--============================================================
 
-	local SelectedSpectatePlayer = nil
-	local SpectatingPlayer = nil
-	local InventoryViewingPlayer = nil
-	local SpectateViewMode = "First Person"
+	SelectedSpectatePlayer = nil
+	SpectatingPlayer = nil
+	InventoryViewingPlayer = nil
+	SpectateViewMode = "First Person"
 
-	local PlayerListScroll = create("ScrollingFrame", {
+	PlayerListScroll = create("ScrollingFrame", {
 		Name = "PlayerListScroll",
 		BackgroundColor3 = PANEL,
 		BackgroundTransparency = 0.08,
@@ -4706,7 +4897,7 @@ end
 		SortOrder = Enum.SortOrder.LayoutOrder,
 	}, PlayerListScroll)
 
-	local SelectedPlayerStatus = label(
+	SelectedPlayerStatus = label(
 		PlayersPage,
 		"Selected Player: None",
 		UDim2.new(1, -10, 0, 30),
@@ -4716,13 +4907,13 @@ end
 	SelectedPlayerStatus.TextColor3 = MUTED
 	SelectedPlayerStatus.LayoutOrder = 3
 
-	local SpectateButton = pageButton(
+	SpectateButton = pageButton(
 		PlayersPage,
 		"Spectate: OFF"
 	)
 	SpectateButton.LayoutOrder = 4
 
-	local SpectateViewButton = button(
+	SpectateViewButton = button(
 		PlayersPage,
 		"View: FIRST PERSON",
 		UDim2.fromOffset(0, 0),
@@ -4730,13 +4921,13 @@ end
 	)
 	SpectateViewButton.LayoutOrder = 5
 
-	local InventoryButton = pageButton(
+	InventoryButton = pageButton(
 		PlayersPage,
 		"Inventory: OFF"
 	)
 	InventoryButton.LayoutOrder = 6
 
-	local InventoryStatus = label(
+	InventoryStatus = label(
 		PlayersPage,
 		"Inventory: None",
 		UDim2.new(1, -10, 0, 30),
@@ -4746,7 +4937,7 @@ end
 	InventoryStatus.TextColor3 = MUTED
 	InventoryStatus.LayoutOrder = 7
 
-	local InventoryScroll = create("ScrollingFrame", {
+	InventoryScroll = create("ScrollingFrame", {
 		Name = "InventoryScroll",
 		BackgroundColor3 = PANEL,
 		BackgroundTransparency = 0.08,
@@ -4775,7 +4966,7 @@ end
 		SortOrder = Enum.SortOrder.LayoutOrder,
 	}, InventoryScroll)
 
-	local function clearInventoryButtons()
+	function clearInventoryButtons()
 		for _, child in ipairs(InventoryScroll:GetChildren()) do
 			if child:IsA("TextButton") then
 				child:Destroy()
@@ -4783,7 +4974,7 @@ end
 		end
 	end
 
-	local function getInventoryItems(player)
+	function getInventoryItems(player)
 		local items = {}
 
 		if not player then
@@ -4817,7 +5008,7 @@ end
 		return items
 	end
 
-	local function showPlayerInventory(player)
+	function showPlayerInventory(player)
 		clearInventoryButtons()
 
 		if not player then
@@ -4857,7 +5048,7 @@ end
 		end
 	end
 
-	local function stopInventoryView()
+	function stopInventoryView()
 		InventoryViewingPlayer = nil
 		InventoryScroll.Visible = false
 		InventoryButton.Text = "Inventory: OFF"
@@ -4867,15 +5058,11 @@ end
 		clearInventoryButtons()
 	end
 
-	local function startInventoryView()
+	function startInventoryView()
 		local player = SelectedSpectatePlayer
 
 		if not player or player == LocalPlayer then
 			stopInventoryView()
-			return
-		end
-
-		if SpectatingPlayer then
 			return
 		end
 
@@ -4885,7 +5072,15 @@ end
 		InventoryButton.TextColor3 = GREEN
 	end
 
-	local function getTargetRoot(player)
+	InventoryButton.MouseButton1Click:Connect(function()
+		if InventoryViewingPlayer then
+			stopInventoryView()
+		else
+			startInventoryView()
+		end
+	end)
+
+	function getTargetRoot(player)
 		if not player or not player.Parent then
 			return nil, nil
 		end
@@ -4906,20 +5101,55 @@ end
 	end
 
 	--============================================================
-	-- NEW SPECTATE CAMERA
+	-- OCEANA SPECTATE CAMERA
+	-- Third-person orbit camera matching the reference
 	--============================================================
 
-	local SpectateLooking = false
+	SpectateDistance = 10
+	SpectateMinDistance = 4
+	SpectateMaxDistance = 22
+	SpectateViewMode = "Third Person"
+
+	local SpectateDragging = false
 	local SpectateYaw = 0
-	local SpectatePitch = 0
-	local SpectateDistance = 14
-	local SpectateLookSensitivity = 0.0035
-	local SpectateMinDistance = 4
-	local SpectateMaxDistance = 35
+	local SpectatePitch = math.rad(-8)
+	local SpectateSensitivity = 0.0045
+	local SpectateTouchInput = nil
+
+	local function getSpectateHead(player)
+		if not player or not player.Parent then
+			return nil
+		end
+
+		local character = player.Character
+		if not character or not character.Parent then
+			return nil
+		end
+
+		local head = character:FindFirstChild("Head")
+		if head and head:IsA("BasePart") then
+			return head
+		end
+
+		return character:FindFirstChild("HumanoidRootPart") or character.PrimaryPart
+	end
+
+	local function resetSpectateOrbit()
+		SpectatePitch = math.rad(-8)
+
+		local root = getTargetRoot(SpectatingPlayer)
+		if root then
+			local look = root.CFrame.LookVector
+			SpectateYaw = math.atan2(-look.X, -look.Z)
+		else
+			SpectateYaw = 0
+		end
+	end
 
 	local function stopSpectating()
 		SpectatingPlayer = nil
-		SpectateLooking = false
+		SpectateDragging = false
+		SpectateTouchInput = nil
 		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 
 		local camera = workspace.CurrentCamera
@@ -4934,87 +5164,67 @@ end
 		SpectateButton.TextColor3 = WHITE
 	end
 
-
-	local function resetSpectateLook(root)
-		if not root or not root.Parent then
-			SpectateYaw = 0
-			SpectatePitch = 0
+	local function updateSpectateCamera()
+		if not SpectatingPlayer then
 			return
 		end
 
-		local look = root.CFrame.LookVector
-		SpectateYaw = math.atan2(-look.X, -look.Z)
-		SpectatePitch = 0
-	end
-
-	local function getSpectateCameraCFrame(root)
-		if not root or not root.Parent then
-			return nil
+		if not SpectatingPlayer.Parent then
+			stopSpectating()
+			return
 		end
 
-		local character = root.Parent
-		local head = character:FindFirstChild("Head")
-		local focusPosition = (head and head:IsA("BasePart"))
-			and head.Position
-			or (root.Position + Vector3.new(0, 1.5, 0))
+		local camera = workspace.CurrentCamera
+		local root, humanoid = getTargetRoot(SpectatingPlayer)
+		local head = getSpectateHead(SpectatingPlayer)
 
+		if not camera or not root or not humanoid or not head then
+			return
+		end
+
+		camera.CameraType = Enum.CameraType.Scriptable
+		camera.CameraSubject = nil
+
+		-- Keep the camera centered around the selected player's body,
+		-- while allowing the spectator to orbit freely around them.
+		local focus = head.Position + Vector3.new(0, 0.15, 0)
 		local rotation = CFrame.fromOrientation(SpectatePitch, SpectateYaw, 0)
 
-		if SpectateViewMode == "Third Person" then
-			local offset = rotation:VectorToWorldSpace(Vector3.new(0, 0, SpectateDistance))
-			return CFrame.lookAt(focusPosition + offset, focusPosition)
+		if SpectateViewMode == "First Person" then
+			-- Preserve the first-person option while still allowing independent look-around.
+			camera.CFrame = head.CFrame * rotation
+		else
+			local offset = rotation:VectorToWorldSpace(
+				Vector3.new(0, 0, SpectateDistance)
+			)
+
+			camera.CFrame = CFrame.lookAt(
+				focus + offset,
+				focus
+			)
 		end
 
-		return CFrame.new(focusPosition) * rotation
+		SpectateButton.Text = "Spectate: ON"
+		SpectateButton.TextColor3 = GREEN
 	end
 
 	local function spectateSelectedPlayer()
 		local player = SelectedSpectatePlayer
 
-		if not player or player == LocalPlayer or not player.Parent then
-			player = nil
+		-- Stay locked to the player the user actually selected.
+		if not player
+			or player == LocalPlayer
+			or not player.Parent then
 
-			for _, candidate in ipairs(Players:GetPlayers()) do
-				if candidate ~= LocalPlayer and candidate.Parent then
-					player = candidate
-					break
-				end
-			end
-
-			if not player then
-				SpectateButton.Text = "Spectate: NO PLAYERS"
-				SpectateButton.TextColor3 = BLUE2
-				return
-			end
-
-			SelectedSpectatePlayer = player
-			SelectedPlayerStatus.Text =
-				"Selected Player: " .. player.DisplayName .. " (" .. player.Name .. ")"
-			SelectedPlayerStatus.TextColor3 = BLUE2
+			SpectateButton.Text = "Spectate: SELECT PLAYER"
+			SpectateButton.TextColor3 = BLUE2
+			return
 		end
 
 		stopInventoryView()
 		SpectatingPlayer = player
-
-		local camera = workspace.CurrentCamera
-		local root = getTargetRoot(player)
-
-		if camera and root then
-			resetSpectateLook(root)
-			camera.CameraType = Enum.CameraType.Scriptable
-			camera.CameraSubject = nil
-
-			local cf = getSpectateCameraCFrame(root)
-			if cf then
-				camera.CFrame = cf
-			end
-
-			SpectateButton.Text = "Spectate: ON"
-			SpectateButton.TextColor3 = GREEN
-		else
-			SpectateButton.Text = "Spectate: WAITING"
-			SpectateButton.TextColor3 = BLUE2
-		end
+		resetSpectateOrbit()
+		updateSpectateCamera()
 	end
 
 	pcall(function()
@@ -5025,79 +5235,62 @@ end
 		"OCEANA_SpectateCamera",
 		Enum.RenderPriority.Camera.Value + 1,
 		function()
-			if not SpectatingPlayer then
-				return
-			end
-
-			if not SpectatingPlayer.Parent then
-				stopSpectating()
-				return
-			end
-
-			local camera = workspace.CurrentCamera
-			local root, humanoid = getTargetRoot(SpectatingPlayer)
-
-			if not camera then
-				return
-			end
-
-			if root and humanoid then
-				camera.CameraType = Enum.CameraType.Scriptable
-				camera.CameraSubject = nil
-
-				local cf = getSpectateCameraCFrame(root)
-				if cf then
-					camera.CFrame = cf
-				end
-
-				SpectateButton.Text = "Spectate: ON"
-				SpectateButton.TextColor3 = GREEN
-			else
-				camera.CameraType = Enum.CameraType.Scriptable
-				camera.CameraSubject = nil
-				SpectateButton.Text = "Spectate: WAITING"
-				SpectateButton.TextColor3 = BLUE2
-			end
+			updateSpectateCamera()
 		end
 	)
 
+	-- PC: hold right mouse and drag to orbit around the selected player.
 	UserInputService.InputBegan:Connect(function(input, processed)
 		if processed or not SpectatingPlayer then
 			return
 		end
 
 		if input.UserInputType == Enum.UserInputType.MouseButton2 then
-			SpectateLooking = true
+			SpectateDragging = true
 			UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+		elseif input.UserInputType == Enum.UserInputType.Touch then
+			SpectateDragging = true
+			SpectateTouchInput = input
 		end
 	end)
 
 	UserInputService.InputChanged:Connect(function(input)
-		if not SpectatingPlayer then
+		if not SpectatingPlayer or not SpectateDragging then
 			return
 		end
 
-		if input.UserInputType == Enum.UserInputType.MouseMovement and SpectateLooking then
-			SpectateYaw -= input.Delta.X * SpectateLookSensitivity
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			SpectateYaw -= input.Delta.X * SpectateSensitivity
 			SpectatePitch = math.clamp(
-				SpectatePitch - input.Delta.Y * SpectateLookSensitivity,
-				math.rad(-85),
-				math.rad(85)
+				SpectatePitch - input.Delta.Y * SpectateSensitivity,
+				math.rad(-75),
+				math.rad(65)
 			)
-		elseif input.UserInputType == Enum.UserInputType.MouseWheel
-			and SpectateViewMode == "Third Person" then
+		elseif input.UserInputType == Enum.UserInputType.MouseWheel then
 			SpectateDistance = math.clamp(
-				SpectateDistance - input.Position.Z * 2,
+				SpectateDistance - input.Position.Z * 1.5,
 				SpectateMinDistance,
 				SpectateMaxDistance
+			)
+		elseif input.UserInputType == Enum.UserInputType.Touch
+			and input == SpectateTouchInput then
+			SpectateYaw -= input.Delta.X * SpectateSensitivity
+			SpectatePitch = math.clamp(
+				SpectatePitch - input.Delta.Y * SpectateSensitivity,
+				math.rad(-75),
+				math.rad(65)
 			)
 		end
 	end)
 
 	UserInputService.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton2 then
-			SpectateLooking = false
+			SpectateDragging = false
 			UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+		elseif input.UserInputType == Enum.UserInputType.Touch
+			and input == SpectateTouchInput then
+			SpectateDragging = false
+			SpectateTouchInput = nil
 		end
 	end)
 
@@ -5111,10 +5304,8 @@ end
 		end
 
 		if SpectatingPlayer then
-			local root = getTargetRoot(SpectatingPlayer)
-			if root then
-				resetSpectateLook(root)
-			end
+			resetSpectateOrbit()
+			updateSpectateCamera()
 		end
 	end)
 
@@ -5126,17 +5317,9 @@ end
 		end
 	end)
 
-	InventoryButton.MouseButton1Click:Connect(function()
-		if SpectatingPlayer then
-			return
-		end
-
-		if InventoryViewingPlayer then
-			stopInventoryView()
-		else
-			startInventoryView()
-		end
-	end)
+	--============================================================
+	-- PLAYER SELECTION
+	--============================================================
 
 	function selectSpectatePlayer(player)
 		if not player or player == LocalPlayer or not player.Parent then
@@ -5148,7 +5331,9 @@ end
 			"Selected Player: " .. player.DisplayName .. " (" .. player.Name .. ")"
 		SelectedPlayerStatus.TextColor3 = BLUE2
 
-		stopInventoryView()
+		if typeof(stopInventoryView) == "function" then
+			stopInventoryView()
+		end
 
 		for _, child in ipairs(PlayerListScroll:GetChildren()) do
 			if child:IsA("TextButton") then
@@ -5162,6 +5347,10 @@ end
 			end
 		end
 	end
+
+	--============================================================
+	-- PLAYER LIST
+	--============================================================
 
 	function refreshPlayersPage()
 		for _, child in ipairs(PlayerListScroll:GetChildren()) do
@@ -5228,33 +5417,14 @@ end
 			SelectedSpectatePlayer = nil
 			SelectedPlayerStatus.Text = "Selected Player: None"
 			SelectedPlayerStatus.TextColor3 = MUTED
-			stopInventoryView()
 		end
 
 		if SpectatingPlayer == player then
 			stopSpectating()
 		end
 
-		if InventoryViewingPlayer == player then
-			stopInventoryView()
-		end
-
-		removeESP(player)
-		task.wait(0.2)
 		refreshPlayersPage()
 	end)
-
-	for _, player in ipairs(Players:GetPlayers()) do
-		if player ~= LocalPlayer then
-			player.CharacterAdded:Connect(function()
-				task.wait(0.5)
-
-				if hasPlayerESPEnabled() then
-					addESP(player)
-				end
-			end)
-		end
-	end
 
 	--============================================================
 	-- SIDEBAR
@@ -5263,15 +5433,16 @@ end
 	pageNames = {
 		"Information",
 		"Player",
-		"Combat",
-		"Visuals",
-		"Utility",
-		"Cars",
 		"Players",
-		"Auto Farm",
-		"Nitty AUTO FARM",
+		"Visuals",
+		"Combat",
 		"Chat",
 		"Name Changer",
+		"Teleport",
+		"Cars",
+		"Settings",
+		"Auto Farm",
+		"Nitty AUTO FARM",
 	}
 
 	function createSidebarButton(name, index)
@@ -5382,6 +5553,7 @@ end
 	end
 
 	showPage("Information")
+	GUI:SetAttribute("OCEANA_LOADED", true)
 
 	--============================================================
 	-- DRAGGING
@@ -5401,10 +5573,10 @@ end
 
 		if Minimized then
 			MainFrame.Size =
-				UDim2.fromOffset(780, 58)
+				UDim2.fromOffset(860, 58)
 		else
 			MainFrame.Size =
-				UDim2.fromOffset(780, 510)
+				UDim2.fromOffset(860, 560)
 		end
 	end)
 
@@ -5628,9 +5800,9 @@ end
 	-- NOCLIP
 	--============================================================
 
-	local NoclipOriginalCollision = {}
+	NoclipOriginalCollision = {}
 
-	local function setNoclipCollision(enabled)
+	function setNoclipCollision(enabled)
 		if not Character then
 			return
 		end
@@ -5930,7 +6102,7 @@ end
 	-- SILENT AIM TARGET PROVIDER
 	--============================================================
 
-	local function getSilentAimPart()
+	function getSilentAimPart()
 		if not SilentAimEnabled then
 			return nil, nil
 		end
@@ -6197,526 +6369,6 @@ end
 	}
 
 
-	--============================================================
-	-- HITBOX EXTENDER / WHITELIST
-	-- Isolated from the main startup so failures here cannot stop OCEANA loading.
-	-- UI input: 0 - 50000. Roblox BasePart.Size is capped at 2048 per axis.
-	--============================================================
-
-	HitboxEnabled = false
-	HitboxSize = 0
-	HitboxOriginals = {}
-	HitboxWhitelist = SharedWhitelist
-
-	function setupHitboxExtender()
-		local ok, err = pcall(function()
-			local HITBOX_UI_MAX = 50000
-			local HITBOX_PART_MAX = 2048
-			local HitboxToggleButton
-			local HitboxSizeBox
-			local HitboxStatus
-			local WhitelistBox
-			local WhitelistList
-			local HitboxParts = {}
-			local HitboxOutlines = {}
-
-			local function getCharacter(player)
-				if not player or player == LocalPlayer then
-					return nil
-				end
-				return player.Character
-			end
-
-			local function getRoot(player)
-				local character = getCharacter(player)
-				if not character then
-					return nil
-				end
-				return character:FindFirstChild("HumanoidRootPart")
-			end
-
-			local function isWhitelisted(player)
-				if not player then
-					return false
-				end
-
-				return HitboxWhitelist[player.UserId] == true
-					or HitboxWhitelist[string.lower(player.Name)] == true
-					or HitboxWhitelist[string.lower(player.DisplayName)] == true
-			end
-
-			local function removeHitbox(player)
-				local part = HitboxParts[player]
-				local outline = HitboxOutlines[player]
-
-				if outline then
-					outline:Destroy()
-					HitboxOutlines[player] = nil
-				end
-
-				if part then
-					part:Destroy()
-					HitboxParts[player] = nil
-				end
-			end
-
-			local function createHitbox(player)
-				local character = getCharacter(player)
-				local root = getRoot(player)
-
-				if not character or not root then
-					return nil
-				end
-
-				removeHitbox(player)
-
-				local part = Instance.new("Part")
-				part.Name = "OCEANA_Hitbox"
-				part.Shape = Enum.PartType.Block
-				part.Size = Vector3.new(1, 1, 1)
-				part.CFrame = root.CFrame
-				part.Transparency = 1
-				part.CanCollide = false
-				part.CanTouch = false
-				part.CanQuery = true
-				part.CastShadow = false
-				part.Massless = true
-				part.Anchored = false
-				part.Parent = character
-
-				local weld = Instance.new("WeldConstraint")
-				weld.Name = "OCEANA_HitboxWeld"
-				weld.Part0 = root
-				weld.Part1 = part
-				weld.Parent = part
-
-				HitboxParts[player] = part
-				return part
-			end
-
-			local function getOrCreateOutline(player, part)
-				if not part then
-					return nil
-				end
-
-				local outline = HitboxOutlines[player]
-				if outline and outline.Parent then
-					outline.Adornee = part
-					return outline
-				end
-
-				outline = Instance.new("Highlight")
-				outline.Name = "OCEANA_HitboxOutline"
-				outline.Adornee = part
-				outline.FillTransparency = 1
-				outline.OutlineColor = RED
-				outline.OutlineTransparency = 0
-				outline.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-				outline.Parent = workspace
-
-				HitboxOutlines[player] = outline
-				return outline
-			end
-
-			local function applyHitbox(player)
-				if not player or player == LocalPlayer then
-					return
-				end
-
-				if not HitboxEnabled or HitboxSize <= 0 or isWhitelisted(player) then
-					removeHitbox(player)
-					return
-				end
-
-				local character = getCharacter(player)
-				local root = getRoot(player)
-				if not character or not root then
-					removeHitbox(player)
-					return
-				end
-
-				local part = HitboxParts[player]
-				if not part or part.Parent ~= character then
-					part = createHitbox(player)
-				end
-
-				if not part then
-					return
-				end
-
-				local size = math.clamp(HitboxSize, 1, HITBOX_PART_MAX)
-
-				pcall(function()
-					part.Size = Vector3.new(size, size, size)
-					part.CFrame = root.CFrame
-					part.Transparency = 1
-					part.CanCollide = false
-					part.CanTouch = false
-					part.CanQuery = true
-				end)
-
-				local outline = getOrCreateOutline(player, part)
-				if outline then
-					outline.Visible = true
-				end
-			end
-
-			local function refreshHitboxes()
-				if not HitboxEnabled or HitboxSize <= 0 then
-					for player in pairs(HitboxParts) do
-						removeHitbox(player)
-					end
-					return
-				end
-
-				for _, player in ipairs(Players:GetPlayers()) do
-					if player ~= LocalPlayer then
-						applyHitbox(player)
-					end
-				end
-			end
-
-			local function refreshWhitelistList()
-				if not WhitelistList then
-					return
-				end
-
-				for _, child in ipairs(WhitelistList:GetChildren()) do
-					if child:IsA("TextLabel") or child:IsA("TextButton") then
-						child:Destroy()
-					end
-				end
-
-				local names = {}
-				local seen = {}
-				for key, value in pairs(HitboxWhitelist) do
-					if value == true and type(key) == "string" and not seen[key] then
-						seen[key] = true
-						table.insert(names, key)
-					end
-				end
-				table.sort(names)
-
-				if #names == 0 then
-					local empty = label(
-						WhitelistList,
-						"Whitelist is empty",
-						UDim2.new(1, -10, 0, 28),
-						UDim2.fromOffset(0, 0),
-						11
-					)
-					empty.TextColor3 = MUTED
-					return
-				end
-
-				for _, name in ipairs(names) do
-					local removeButton = button(
-						WhitelistList,
-						"REMOVE  " .. name,
-						UDim2.fromOffset(0, 0),
-						UDim2.new(1, -10, 0, 34)
-					)
-
-					removeButton.MouseButton1Click:Connect(function()
-						HitboxWhitelist[name] = nil
-
-						for _, player in ipairs(Players:GetPlayers()) do
-							if string.lower(player.Name) == string.lower(name)
-								or string.lower(player.DisplayName) == string.lower(name) then
-								HitboxWhitelist[player.UserId] = nil
-								HitboxWhitelist[string.lower(player.Name)] = nil
-							end
-						end
-
-						refreshWhitelistList()
-						refreshHitboxes()
-					end)
-				end
-			end
-
-			HitboxToggleButton = pageButton(
-				UtilityPage,
-				"Hitbox Extender: OFF",
-				function()
-					HitboxEnabled = not HitboxEnabled
-					HitboxToggleButton.Text = "Hitbox Extender: " .. (HitboxEnabled and "ON" or "OFF")
-					HitboxToggleButton.TextColor3 = HitboxEnabled and GREEN or WHITE
-
-					if HitboxStatus then
-						if HitboxEnabled then
-							local actual = math.clamp(HitboxSize, 0, HITBOX_PART_MAX)
-							HitboxStatus.Text = "Hitbox size: " .. tostring(HitboxSize) .. "  |  Actual: " .. tostring(actual)
-							HitboxStatus.TextColor3 = GREEN
-						else
-							HitboxStatus.Text = "Hitbox extender disabled"
-							HitboxStatus.TextColor3 = MUTED
-						end
-					end
-
-					refreshHitboxes()
-				end
-			)
-
-			HitboxSizeBox = create("TextBox", {
-				Name = "HitboxSizeBox",
-				BackgroundColor3 = PANEL2,
-				TextColor3 = WHITE,
-				PlaceholderText = "Hitbox size (0 - 50000)",
-				PlaceholderColor3 = MUTED,
-				Text = "0",
-				TextSize = 13,
-				Font = Enum.Font.GothamMedium,
-				ClearTextOnFocus = false,
-				Size = UDim2.new(1, -10, 0, 42),
-				Position = UDim2.fromOffset(0, 0),
-			}, UtilityPage)
-			corner(HitboxSizeBox, 9)
-			stroke(HitboxSizeBox, BORDER, 1, 0.3)
-			HitboxSizeBox.LayoutOrder = #UtilityPage:GetChildren() + 1
-
-			HitboxSizeBox.FocusLost:Connect(function()
-				local value = tonumber(HitboxSizeBox.Text)
-				if value == nil then
-					value = HitboxSize
-				end
-
-				HitboxSize = math.clamp(math.floor(value + 0.5), 0, HITBOX_UI_MAX)
-				HitboxSizeBox.Text = tostring(HitboxSize)
-
-				if HitboxStatus then
-					if HitboxEnabled then
-						local actual = math.clamp(HitboxSize, 0, HITBOX_PART_MAX)
-						HitboxStatus.Text = "Hitbox size: " .. tostring(HitboxSize) .. "  |  Actual: " .. tostring(actual)
-						HitboxStatus.TextColor3 = GREEN
-					else
-						HitboxStatus.Text = "Hitbox extender disabled"
-						HitboxStatus.TextColor3 = MUTED
-					end
-				end
-
-				refreshHitboxes()
-			end)
-
-			HitboxStatus = label(
-				UtilityPage,
-				"Hitbox extender disabled",
-				UDim2.new(1, -10, 0, 28),
-				UDim2.fromOffset(0, 0),
-				11
-			)
-			HitboxStatus.TextColor3 = MUTED
-			HitboxStatus.LayoutOrder = #UtilityPage:GetChildren() + 1
-
-			local WhitelistTitle = label(
-				UtilityPage,
-				"HITBOX WHITELIST",
-				UDim2.new(1, -10, 0, 28),
-				UDim2.fromOffset(0, 0),
-				12
-			)
-			WhitelistTitle.Font = Enum.Font.GothamBold
-			WhitelistTitle.TextColor3 = BLUE2
-			WhitelistTitle.LayoutOrder = #UtilityPage:GetChildren() + 1
-
-			WhitelistBox = create("TextBox", {
-				Name = "WhitelistBox",
-				BackgroundColor3 = PANEL2,
-				TextColor3 = WHITE,
-				PlaceholderText = "Player username or display name",
-				PlaceholderColor3 = MUTED,
-				Text = "",
-				TextSize = 13,
-				Font = Enum.Font.GothamMedium,
-				ClearTextOnFocus = false,
-				Size = UDim2.new(1, -10, 0, 42),
-				Position = UDim2.fromOffset(0, 0),
-			}, UtilityPage)
-			corner(WhitelistBox, 9)
-			stroke(WhitelistBox, BORDER, 1, 0.3)
-			WhitelistBox.LayoutOrder = #UtilityPage:GetChildren() + 1
-
-			pageButton(
-				UtilityPage,
-				"Add Player to Whitelist",
-				function()
-					local raw = WhitelistBox.Text or ""
-					local query = string.lower(raw:match("^%s*(.-)%s*$"))
-					if query == "" then
-						return
-					end
-
-					local foundPlayer
-					for _, player in ipairs(Players:GetPlayers()) do
-						if string.lower(player.Name) == query or string.lower(player.DisplayName) == query then
-							foundPlayer = player
-							break
-						end
-					end
-
-					if not foundPlayer then
-						WhitelistBox.Text = "Player not found"
-						return
-					end
-
-					HitboxWhitelist[foundPlayer.UserId] = true
-					HitboxWhitelist[string.lower(foundPlayer.Name)] = true
-					WhitelistBox.Text = ""
-
-					-- A newly-whitelisted player is immediately removed from all aim targets.
-					if AimTarget == foundPlayer then
-						AimTarget = nil
-					end
-
-					refreshWhitelistList()
-					refreshHitboxes()
-				end
-			)
-
-			WhitelistList = create("Frame", {
-				Name = "WhitelistList",
-				BackgroundTransparency = 1,
-				Size = UDim2.new(1, -10, 0, 120),
-			}, UtilityPage)
-			WhitelistList.LayoutOrder = #UtilityPage:GetChildren() + 1
-
-			create("UIListLayout", {
-				Padding = UDim.new(0, 6),
-				SortOrder = Enum.SortOrder.LayoutOrder,
-			}, WhitelistList)
-
-			refreshWhitelistList()
-
-			local function hookPlayer(player)
-				if player == LocalPlayer then
-					return
-				end
-
-				player.CharacterAdded:Connect(function()
-					task.wait(0.5)
-					removeHitbox(player)
-					if HitboxEnabled then
-						applyHitbox(player)
-					end
-				end)
-			end
-
-			for _, player in ipairs(Players:GetPlayers()) do
-				hookPlayer(player)
-			end
-
-			Players.PlayerAdded:Connect(hookPlayer)
-
-			Players.PlayerRemoving:Connect(function(player)
-				removeHitbox(player)
-				HitboxWhitelist[player.UserId] = nil
-				HitboxWhitelist[string.lower(player.Name)] = nil
-			end)
-
-			RunService.Heartbeat:Connect(function()
-				if not HitboxEnabled or HitboxSize <= 0 then
-					return
-				end
-
-				for _, player in ipairs(Players:GetPlayers()) do
-					if player ~= LocalPlayer then
-						applyHitbox(player)
-					end
-				end
-			end)
-		end)
-
-		if not ok then
-			warn("[OCEANA] Hitbox extender failed to initialize: " .. tostring(err))
-		end
-	end
-
-	setupHitboxExtender()
-
-	--============================================================
-	-- DEVELOPER ANTI-CHEAT DIAGNOSTICS
-	--============================================================
-	-- This mode is for testing YOUR OWN game's anti-cheat. It does not
-	-- hide movement, spoof server state, or bypass detections.
-	local DeveloperACDiagnostics = false
-	local DeveloperACEvents = 0
-	local DeveloperACStatusLabel
-	local DeveloperACToggle
-
-	local function recordDeveloperACEvent(name)
-		if not DeveloperACDiagnostics then
-			return
-		end
-
-		DeveloperACEvents += 1
-		warn("[OCEANA AC TEST] " .. tostring(name) .. " | event #" .. tostring(DeveloperACEvents))
-
-		if DeveloperACStatusLabel then
-			DeveloperACStatusLabel.Text =
-				"Anti-Cheat Diagnostics: ON  |  Events: " .. tostring(DeveloperACEvents)
-		end
-	end
-
-	DeveloperACStatusLabel = label(
-		UtilityPage,
-		"Anti-Cheat Diagnostics: OFF  |  Events: 0",
-		UDim2.new(1, -10, 0, 30),
-		UDim2.fromOffset(0, 0),
-		12
-	)
-	DeveloperACStatusLabel.TextColor3 = MUTED
-	DeveloperACStatusLabel.LayoutOrder = #UtilityPage:GetChildren() + 1
-
-	DeveloperACToggle = pageButton(
-		UtilityPage,
-		"Anti-Cheat Diagnostics: OFF",
-		function()
-			DeveloperACDiagnostics = not DeveloperACDiagnostics
-			DeveloperACEvents = 0
-
-			DeveloperACToggle.Text =
-				"Anti-Cheat Diagnostics: " .. (DeveloperACDiagnostics and "ON" or "OFF")
-			DeveloperACToggle.TextColor3 = DeveloperACDiagnostics and GREEN or WHITE
-
-			DeveloperACStatusLabel.Text =
-				"Anti-Cheat Diagnostics: " .. (DeveloperACDiagnostics and "ON" or "OFF") ..
-				"  |  Events: 0"
-			DeveloperACStatusLabel.TextColor3 = DeveloperACDiagnostics and GREEN or MUTED
-
-			LocalPlayer:SetAttribute("OCEANA_AntiCheatDiagnostics", DeveloperACDiagnostics)
-		end
-	)
-	DeveloperACToggle.LayoutOrder = #UtilityPage:GetChildren() + 1
-
-	pageButton(
-		UtilityPage,
-		"Reset Anti-Cheat Test Events",
-		function()
-			DeveloperACEvents = 0
-			if DeveloperACStatusLabel then
-				DeveloperACStatusLabel.Text =
-					"Anti-Cheat Diagnostics: " ..
-					(DeveloperACDiagnostics and "ON" or "OFF") ..
-					"  |  Events: 0"
-			end
-		end
-	).LayoutOrder = #UtilityPage:GetChildren() + 1
-
-	-- Record local test activity from the existing developer utility without
-	-- changing the underlying movement/combat behavior.
-	do
-		local previousAimAssist = AimAssist
-		RunService.Heartbeat:Connect(function()
-			if not DeveloperACDiagnostics then
-				previousAimAssist = AimAssist
-				return
-			end
-
-			if AimAssist ~= previousAimAssist then
-				recordDeveloperACEvent(AimAssist and "AimAssistEnabled" or "AimAssistDisabled")
-				previousAimAssist = AimAssist
-			end
-		end)
-	end
 
 	--============================================================
 	-- FINAL STARTUP
@@ -6734,4 +6386,3 @@ end
 	print("[OCEANA] Silent Aim target provider loaded")
 	print("[OCEANA] Silent Aim uses Utility whitelist")
 	print("========================================")
-end
