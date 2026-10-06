@@ -6481,4 +6481,4 @@ end
 	print("[OCEANA] Multiple access keys enabled")
 	print("[OCEANA] Silent Aim target provider loaded")
 	print("[OCEANA] Silent Aim uses Utility whitelist")
-	print("========================================")f 
+	print("========================================")
