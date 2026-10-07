@@ -4095,6 +4095,123 @@ end
 	-- CARS PAGE
 	--============================================================
 
+	--============================================================
+	-- VEHICLE / BIKE FLY
+	--============================================================
+	local VehicleFlyEnabled = false
+	local VehicleFlySpeed = 50
+	local VEHICLE_FLY_MAX_SPEED = 500
+
+	local function getVehicleForFly()
+		local character = LocalPlayer.Character
+		if not character then
+			return nil
+		end
+
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		if not humanoid then
+			return nil
+		end
+
+		local seat = humanoid.SeatPart
+		if not seat or not (seat:IsA("Seat") or seat:IsA("VehicleSeat")) then
+			return nil
+		end
+
+		local vehicle = seat:FindFirstAncestorOfClass("Model")
+		if not vehicle then
+			return nil
+		end
+
+		return vehicle, seat
+	end
+
+	RunService.Heartbeat:Connect(function()
+		if not VehicleFlyEnabled then
+			return
+		end
+
+		local vehicle, seat = getVehicleForFly()
+		if not vehicle or not seat then
+			return
+		end
+
+		local camera = workspace.CurrentCamera
+		if not camera then
+			return
+		end
+
+		local direction = Vector3.zero
+
+		if FlyKeys and FlyKeys.W then
+			direction += camera.CFrame.LookVector
+		end
+		if FlyKeys and FlyKeys.S then
+			direction -= camera.CFrame.LookVector
+		end
+		if FlyKeys and FlyKeys.D then
+			direction += camera.CFrame.RightVector
+		end
+		if FlyKeys and FlyKeys.A then
+			direction -= camera.CFrame.RightVector
+		end
+		if FlyKeys and FlyKeys.Space then
+			direction += Vector3.new(0, 1, 0)
+		end
+		if FlyKeys and FlyKeys.LeftControl then
+			direction -= Vector3.new(0, 1, 0)
+		end
+
+		if direction.Magnitude > 0 then
+			direction = direction.Unit * math.clamp(VehicleFlySpeed, 50, VEHICLE_FLY_MAX_SPEED)
+		else
+			direction = Vector3.zero
+		end
+
+		seat.AssemblyLinearVelocity = direction
+		seat.AssemblyAngularVelocity = Vector3.zero
+	end)
+
+	pageSlider(
+		CarsPage,
+		"Vfly Speed",
+		50,
+		500,
+		50,
+		function(value)
+			VehicleFlySpeed = math.clamp(value, 50, VEHICLE_FLY_MAX_SPEED)
+		end
+	)
+
+	local VFlyButton
+	VFlyButton = pageButton(
+		CarsPage,
+		"Vfly: OFF",
+		function()
+			VehicleFlyEnabled = not VehicleFlyEnabled
+			VFlyButton.Text = "Vfly: " .. (VehicleFlyEnabled and "ON" or "OFF")
+
+			-- Explicitly refresh the VFly pill so its visual state always
+			-- matches the actual VFly state.
+			local track = VFlyButton:FindFirstChild("ToggleTrack")
+			local knob = track and track:FindFirstChild("ToggleKnob")
+			if track and knob then
+				track.BackgroundColor3 = VehicleFlyEnabled and BLUE or BORDER
+				knob.Position = VehicleFlyEnabled
+					and UDim2.new(1, -9, 0.5, 0)
+					or UDim2.new(0, 9, 0.5, 0)
+			end
+
+			if not VehicleFlyEnabled then
+				local _, seat = getVehicleForFly()
+				if seat then
+					seat.AssemblyLinearVelocity = Vector3.zero
+					seat.AssemblyAngularVelocity = Vector3.zero
+				end
+			end
+		end
+	)
+
 	pageTitle(CarsPage, "Cars / Delivery")
 
 	pageButton(
@@ -4344,6 +4461,7 @@ end
 		local lastAttack = 0
 		local lastSearch = 0
 		local lastPath = 0
+		local teleportedToTarget = false
 
 		local function getCharacter()
 			local character = player.Character
@@ -4365,6 +4483,41 @@ end
 			return model:FindFirstChild("HumanoidRootPart")
 				or model.PrimaryPart
 				or model:FindFirstChildWhichIsA("BasePart", true)
+		end
+
+		-- Use the same teleport method as the main Teleport page.
+		-- If seated in a vehicle, move the whole vehicle; otherwise move
+		-- the whole character. This keeps the seat/weld state intact.
+		local function teleportToNitty(targetRoot)
+			local character, humanoid, root = getCharacter()
+			if not character or not root or not targetRoot then
+				return false
+			end
+
+			local destination = CFrame.new(targetRoot.Position + Vector3.new(0, 3, 0))
+			local seat = humanoid and humanoid.SeatPart
+			local vehicle = nil
+
+			if seat and (seat:IsA("VehicleSeat") or seat:IsA("Seat")) then
+				vehicle = seat:FindFirstAncestorOfClass("Model")
+			end
+
+			if vehicle and vehicle ~= character then
+				vehicle:PivotTo(destination)
+
+				for _, obj in ipairs(vehicle:GetDescendants()) do
+					if obj:IsA("BasePart") then
+						obj.AssemblyLinearVelocity = Vector3.zero
+						obj.AssemblyAngularVelocity = Vector3.zero
+					end
+				end
+			else
+				character:PivotTo(destination)
+				root.AssemblyLinearVelocity = Vector3.zero
+				root.AssemblyAngularVelocity = Vector3.zero
+			end
+
+			return true
 		end
 
 		local function isNitty(model)
@@ -4795,6 +4948,7 @@ end
 			running = true
 			target = nil
 			moving = false
+			teleportedToTarget = false
 			setStatus("Nitty test started. Anti-cheat detection remains enabled.", "start")
 			NittyStatus.Text = "Status: Nitty test started."
 		end)
@@ -4804,6 +4958,7 @@ end
 			running = false
 			target = nil
 			moving = false
+			teleportedToTarget = false
 			flightEnabled = false
 			noclipEnabled = false
 			stopNoclip()
@@ -4828,6 +4983,7 @@ end
 			local npc, distance = findNearestNitty(root.Position)
 			if npc then
 				target = npc
+				teleportedToTarget = false
 				NittyTarget.Text = "Target: " .. npc.Name
 				NittyStatus.Text = string.format("Nearest Nitty: %s • %.0f studs", npc.Name, distance)
 			else
@@ -4909,11 +5065,16 @@ end
 			if not target or not target.Parent or not isAllowedNitty(target) then
 				if now - lastSearch >= SEARCH_INTERVAL then
 					lastSearch = now
-					target = findNearestNitty(root.Position)
+					local newTarget = findNearestNitty(root.Position)
+					if newTarget ~= target then
+						target = newTarget
+						teleportedToTarget = false
+					end
 				end
 			end
 
 			if not target then
+				teleportedToTarget = false
 				stopMovement()
 				NittyStatus.Text = "Status: No Nitty found."
 				NittyTarget.Text = "Target: none"
@@ -4924,6 +5085,7 @@ end
 			local targetHumanoid = target:FindFirstChildOfClass("Humanoid")
 			if not targetRoot or not targetHumanoid or targetHumanoid.Health <= 0 then
 				target = nil
+				teleportedToTarget = false
 				moving = false
 				return
 			end
@@ -4931,21 +5093,24 @@ end
 			local distance = (targetRoot.Position - root.Position).Magnitude
 			NittyTarget.Text = string.format("Target: %s • %.0f studs", target.Name, distance)
 
-			-- Direct Nitty teleport: when the Nitty is detected, move directly
-			-- to its current position. If no Nitty is found, the code above
-			-- returns without moving the player anywhere.
-			stopMovement()
-			root.AssemblyLinearVelocity = Vector3.zero
-			root.AssemblyAngularVelocity = Vector3.zero
-			root.CFrame = CFrame.new(targetRoot.Position + Vector3.new(0, 3, 0))
-			root.AssemblyLinearVelocity = Vector3.zero
-			root.AssemblyAngularVelocity = Vector3.zero
-			NittyStatus.Text = "Status: Teleported to " .. target.Name
+			-- Direct Nitty teleport: use the same teleport behavior as the
+			-- other Teleport page buttons, then stop targeting this Nitty.
+			if not teleportedToTarget then
+				stopMovement()
+
+				if teleportToNitty(targetRoot) then
+					teleportedToTarget = true
+					NittyStatus.Text = "Status: Teleported to " .. target.Name
+				end
+			end
 
 			if attackTarget(target) then
 				NittyStatus.Text = "Status: Attacked " .. target.Name
 			end
-			if targetHumanoid.Health <= 0 then target = nil end
+			if targetHumanoid.Health <= 0 then
+				target = nil
+				teleportedToTarget = false
+			end
 		end)
 	end
 
