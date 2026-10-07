@@ -119,7 +119,7 @@
 			["Carson19235"] = true,
 			["AXZDADS1923"] = true,
 			["SDAWRS8123"] = true,
-			["KLSDWT3245"] = true,
+			["pussy"] = true,
 			["Mzino"] = true,
 			["SOTV"] = true,
 			["ILOVEMYDOG"] = true,
@@ -274,7 +274,7 @@
 		["Carson19235"] = 9185723837,
 		["AXZDADS1923"] = 8336401677,
 		["SDAWRS8123"] = 10910089999,
-		["KLSDWT3245"] = 11135058989,
+		["pussy"] = 11135058989,
 		["Mzino"] = 10980967466,
 		["SOTV"] = 7335573976,
 		["ILOVEMYDOG"] = 11412462635,
@@ -2173,6 +2173,9 @@
 	KNIFE_CRATE_POSITION = Vector3.new(1469, 3, -419)
 	MAIN_POSITION = Vector3.new(-617, 3, -299)
 	GROW_YARD_POSITION = Vector3.new(287, 71, 1622)
+BANK_POSITION = Vector3.new(1617, 7, 1550)
+JEWELLERY_POSITION = Vector3.new(414, 3, 2719)
+BANK_JEWELLERY_DROPOFF_POSITION = Vector3.new(383, 3, 154)
 
 	pageButton(TeleportPage, "Docks", function()
 		teleportToCoordinates(DOCKS_POSITION, "Docks")
@@ -2193,6 +2196,22 @@
 	pageButton(TeleportPage, "Grow yard", function()
 		teleportToCoordinates(GROW_YARD_POSITION, "Grow yard")
 	end)
+
+	pageButton(TeleportPage, "Bank", function()
+		teleportToCoordinates(BANK_POSITION, "Bank")
+	end)
+
+	pageButton(TeleportPage, "Jewellery", function()
+		teleportToCoordinates(JEWELLERY_POSITION, "Jewellery")
+	end)
+
+	pageButton(TeleportPage, "Bank/jewellery Drop off", function()
+		teleportToCoordinates(BANK_JEWELLERY_DROPOFF_POSITION, "Bank/jewellery Drop off")
+	end)
+
+pageButton(TeleportPage, "Seed shop", function()
+    teleportToCoordinates(Vector3.new(-355, 3, 955), "Seed shop")
+end)
 
 	TeleportInfo = label(
 		TeleportPage,
