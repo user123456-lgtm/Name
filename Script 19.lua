@@ -1477,6 +1477,18 @@
 		return title
 	end
 
+	--============================================================
+	-- TOGGLE KEYBINDS
+	-- Every ON/OFF page button gets a default key and an editable
+	-- keybind entry in Settings. No existing toggle logic is changed.
+	--============================================================
+	local ToggleKeybinds = {}
+	local ToggleKeybindEntries = {}
+	local ToggleKeybindDefaults = {}
+	local ToggleKeybindIndex = 0
+	local KeybindCapture = nil
+	local registerToggleKeybind
+
 	function pageButton(page, text, callback)
 		local b = button(
 			page,
@@ -1501,6 +1513,7 @@
 				UDim2.fromOffset(14, 0),
 				13
 			)
+			toggleLabel.Visible = true
 			toggleLabel.Font = Enum.Font.GothamMedium
 			toggleLabel.ZIndex = 3
 
@@ -1537,6 +1550,12 @@
 
 			b:GetPropertyChangedSignal("Text"):Connect(refreshToggle)
 			refreshToggle()
+
+			ToggleKeybindIndex += 1
+			local keybindEntry = registerToggleKeybind(b, toggleName, ToggleKeybindDefaults[ToggleKeybindIndex] or Enum.KeyCode.Unknown)
+			if keybindEntry then
+				keybindEntry.Callback = callback
+			end
 		end
 
 		if callback then
@@ -1644,6 +1663,124 @@
 			end
 		end
 	end
+
+	registerToggleKeybind = function(toggleButton, toggleName, defaultKey)
+		local entry = {
+			Button = toggleButton,
+			Name = toggleName,
+			Key = defaultKey,
+			KeyButton = nil,
+			Callback = nil,
+		}
+
+		ToggleKeybinds[toggleButton] = entry
+		table.insert(ToggleKeybindEntries, entry)
+
+		-- Put the editable keybind directly on the ON/OFF switch.
+		local keyButton = create("TextButton", {
+			Name = "ToggleKeybind",
+			BackgroundColor3 = PANEL2,
+			BackgroundTransparency = 0.15,
+			BorderSizePixel = 0,
+			Size = UDim2.fromOffset(130, 24),
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0.5, 0, 0.5, 0),
+			Text = defaultKey and defaultKey.Name or "NONE",
+			TextColor3 = WHITE,
+			TextSize = 10,
+			Font = Enum.Font.GothamBold,
+			AutoButtonColor = false,
+			ZIndex = 4,
+		}, toggleButton)
+		corner(keyButton, 7)
+		stroke(keyButton, BORDER, 1, 0.25)
+		entry.KeyButton = keyButton
+
+		local cancelButton = create("TextButton", {
+			Name = "ToggleKeybindCancel",
+			BackgroundColor3 = PANEL2,
+			BackgroundTransparency = 0.15,
+			BorderSizePixel = 0,
+			Size = UDim2.fromOffset(18, 18),
+			AnchorPoint = Vector2.new(0, 0.5),
+			Position = UDim2.new(0.5, 21, 0.5, 0),
+			Text = "X",
+			TextColor3 = WHITE,
+			TextSize = 10,
+			Font = Enum.Font.GothamBold,
+			AutoButtonColor = false,
+			Visible = false,
+			ZIndex = 5,
+		}, toggleButton)
+		corner(cancelButton, 6)
+		stroke(cancelButton, BORDER, 1, 0.25)
+		entry.CancelButton = cancelButton
+
+		local function stopCapture()
+			if KeybindCapture == entry then
+				KeybindCapture = nil
+			end
+			cancelButton.Visible = false
+			keyButton.Text = entry.Key and entry.Key.Name or "NONE"
+		end
+
+		keyButton.MouseButton1Click:Connect(function()
+			if KeybindCapture == entry then
+				return
+			end
+
+			if KeybindCapture and KeybindCapture ~= entry then
+				local old = KeybindCapture
+				KeybindCapture = nil
+				if old.KeyButton then
+					old.KeyButton.Text = old.Key and old.Key.Name or "NONE"
+				end
+				if old.CancelButton then
+					old.CancelButton.Visible = false
+				end
+			end
+
+			KeybindCapture = entry
+			cancelButton.Visible = true
+		end)
+
+		cancelButton.MouseButton1Click:Connect(stopCapture)
+
+		return entry
+	end
+
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if KeybindCapture then
+			if input.UserInputType == Enum.UserInputType.Keyboard then
+				if input.KeyCode ~= Enum.KeyCode.Unknown then
+					local entry = KeybindCapture
+					entry.Key = input.KeyCode
+					KeybindCapture = nil
+					if entry.KeyButton then
+						entry.KeyButton.Text = entry.Key.Name
+					end
+					if entry.CancelButton then
+						entry.CancelButton.Visible = false
+					end
+					return
+				end
+			end
+			return
+		end
+
+		if processed or input.UserInputType ~= Enum.UserInputType.Keyboard then
+			return
+		end
+
+		for _, entry in ipairs(ToggleKeybindEntries) do
+			if entry.Key == input.KeyCode and entry.Button and entry.Button.Parent and entry.Button.Parent.Visible then
+				if entry.Callback then
+					entry.Callback()
+				end
+				break
+			end
+		end
+	end)
 
 	local SettingsInfo = label(
 		SettingsPage,
@@ -2215,8 +2352,8 @@ end)
 
 	TeleportInfo = label(
 		TeleportPage,
-		"Docks: 949, 41, -2367\nHouse - Top Floor: 271, 133, 2090\nKnife crate: 1469, 3, -419\nMain: -617, 3, -299\nGrow yard: 287, 71, 1622",
-		UDim2.new(1, -10, 0, 60),
+		"Teleport locations are hidden",
+		UDim2.new(1, -10, 0, 28),
 		UDim2.fromOffset(0, 0),
 		12
 	)
