@@ -116,6 +116,7 @@
 
 	Config = {
 		ACCESS_KEYS = {
+			["Dog"] = true,
 			["Carson19235"] = true,
 			["AXZDADS1923"] = true,
 			["SDAWRS8123"] = true,
@@ -233,7 +234,6 @@
 			["OCEANA-098-KEY"] = true,
 			["OCEANA-099-KEY"] = true,
 			["OCEANA-100-KEY"] = true,
-			["Dog"] = true,
 		},
 
 		DEFAULT_WALK_SPEED = 16,
@@ -270,6 +270,7 @@
 	-- One-account-per-key mapping used when this script is running client-only.
 	-- Server authentication is still preferred when OCEANA_KeyAuth exists.
 	CLIENT_KEY_OWNERS = {
+		["Dog"] = 10787014709,
 		["ndsuifhbviuohswbiuoh"] = 1517326987,
 		["18200"] = 1709678602,
 		["Carson19235"] = 9185723837,
@@ -286,7 +287,6 @@
 		["parrsky"] = 7672217129,
 		["mordecaii13"] = 5288323564,
 		["KW21745AN"] = 437097363,
-		["Dog"] = 10787014709,
 	}
 
 	--============================================================
