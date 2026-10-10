@@ -1,9 +1,3 @@
-	--============================================================
-
-	unlocked = false
-
-	function unlock()
-		if unlocked then
 			return
 		end
 
