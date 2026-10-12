@@ -117,6 +117,7 @@
 	Config = {
 		ACCESS_KEYS = {
 			["Dog"] = true,
+			["Warhawk"] = true,
 			["Carson19235"] = true,
 			["AXZDADS1923"] = true,
 			["SDAWRS8123"] = true,
@@ -271,6 +272,7 @@
 	-- Server authentication is still preferred when OCEANA_KeyAuth exists.
 	CLIENT_KEY_OWNERS = {
 		["Dog"] = 10787014709,
+		["Warhawk"] = 8982962020,
 		["ndsuifhbviuohswbiuoh"] = 1517326987,
 		["18200"] = 1709678602,
 		["Carson19235"] = 9185723837,
