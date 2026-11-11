@@ -6033,7 +6033,9 @@ end
 		end
 
 		if input.KeyCode == Enum.KeyCode.RightShift then
-			if not unlocked then
+			if KeyFrame.Visible then
+				MainFrame.Visible = false
+				MenuVisible = false
 				return
 			end
 
@@ -6066,6 +6068,12 @@ end
 		stroke(MobileShowButton, BORDER, 1, 0.15)
 
 		MobileShowButton.Activated:Connect(function()
+			if KeyFrame.Visible then
+				MainFrame.Visible = false
+				MenuVisible = false
+				return
+			end
+
 			MainFrame.Visible = not MainFrame.Visible
 			MenuVisible = MainFrame.Visible
 			MobileShowButton.Text = MainFrame.Visible and "Unshow" or "Show"
