@@ -6033,6 +6033,10 @@ end
 		end
 
 		if input.KeyCode == Enum.KeyCode.RightShift then
+			if not unlocked then
+				return
+			end
+
 			MainFrame.Visible =
 				not MainFrame.Visible
 
